@@ -1,0 +1,3 @@
+[submodule "gestalt"]
+	path = gestalt
+	url = https://github.com/imoyer/gestalt.git
