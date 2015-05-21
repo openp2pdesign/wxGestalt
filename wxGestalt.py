@@ -4,23 +4,12 @@
 # Modules for the wx GUI
 import wx
 import GUI.wxClass as wxClass
-# Modules for the serial communication
-import serial
-from serial.tools import list_ports
+import Functions.wxFunctions as wxFunctions
 
 
 # Variables
 # Current global setting for the Serial port in use
 SerialPortInUse = ""
-
-
-# Functions
-def ScanSerialPorts():
-    # Scan for available ports. return a list
-    ListedPorts = []
-    for i in list_ports.comports():
-        ListedPorts.append(i[0])
-    return ListedPorts
 
 
 # Classes
@@ -39,13 +28,13 @@ class wxGestaltApp(wxClass.MyFrame1):
 
     def On_ScanSerialPort( self, event ):
         # looks for available serial ports
-        SerialPortsAvailable = ScanSerialPorts()
+        SerialPortsAvailable = wxFunctions.ScanSerialPorts()
         global SerialPortInUse
         # Global variable that can be accessed by the whole program
         dlg = wx.SingleChoiceDialog(self, 'Choose the serial port for your machine: ', 'Serial port settings', SerialPortsAvailable, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             SerialPortInUse = dlg.GetStringSelection()
-            print SerialPortInUse
+            print "Connecting to",SerialPortInUse
         dlg.Destroy()
 
 
