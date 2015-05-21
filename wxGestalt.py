@@ -3,7 +3,7 @@
 # Modules
 # Modules for the wx Gui
 import wx
-import wxClass
+import GUI.wxClass as wxClass
 # Modules for the serial communication
 import serial
 import glob
