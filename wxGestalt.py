@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 # Modules
-# Modules for the wx Gui
+# Modules for the wx GUI
 import wx
 import GUI.wxClass as wxClass
 # Modules for the serial communication
 import serial
-import glob
+from serial.tools import list_ports
 
 
 # Variables
@@ -16,8 +16,11 @@ SerialPortInUse = ""
 
 # Functions
 def ScanSerialPorts():
-    # Scan for available ports. return a list of device names.
-    return glob.glob('/dev/ttyACM*') + glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/tty*')
+    # Scan for available ports. return a list
+    ListedPorts = []
+    for i in list_ports.comports():
+        ListedPorts.append(i[0])
+    return ListedPorts
 
 
 # Classes
