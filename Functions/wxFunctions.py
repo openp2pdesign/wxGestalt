@@ -12,3 +12,7 @@ def ScanSerialPorts():
     for i in list_ports.comports():
         ListedPorts.append(i[0])
     return ListedPorts
+
+
+if __name__ == '__main__':
+    pass

@@ -5,6 +5,8 @@
 import wx
 import GUI.wxClass as wxClass
 import Functions.wxFunctions as wxFunctions
+# Module for log
+import sys
 
 
 # Variables
@@ -13,6 +15,15 @@ SerialPortInUse = ""
 
 
 # Classes
+# Class for redirecting the terminal to the log screen
+class RedirectText(object):
+    # Redirect the print message to the Status log area
+    def __init__(self,aWxTextCtrl):
+        self.out=aWxTextCtrl
+
+    def write(self,string):
+        self.out.WriteText(string)
+
 # The class for the main app
 class wxGestaltApp(wxClass.MyFrame1):
 
@@ -22,6 +33,10 @@ class wxGestaltApp(wxClass.MyFrame1):
 
     def InitUI(self):
         self.Show()
+        # Starting the log
+        # Redirect text here
+        redir=RedirectText(self.wxLog)
+        sys.stdout=redir
 
     def On_Quit( self, event ):
         self.Close(True)
