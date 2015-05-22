@@ -4,6 +4,8 @@
 # Modules for the wx GUI
 import wx
 import GUI.wxMainApp as wxMainApp
+import GUI.wxTab as wxTab
+# Various functions
 import Functions.wxFunctions as wxFunctions
 # Module for log
 import sys
@@ -59,7 +61,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Create tabs in the notebook
         self.tabs = []
         for each_tab in range(tabsNumber):
-            self.tabs.append(wx.Panel( self.m_notebook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL ))
+            self.tabs.append(wxTab.MyPanel1(self.m_notebook1))
             self.m_notebook1.AddPage(self.tabs[each_tab], tabTitle[each_tab], False )
 
     def On_Message(self, title, content):
