@@ -24,6 +24,7 @@ class RedirectText(object):
     def write(self,string):
         self.out.WriteText(string)
 
+
 # The class for the main app
 class wxGestaltApp(wxClass.MyFrame1):
 
@@ -60,6 +61,12 @@ class wxGestaltApp(wxClass.MyFrame1):
         for each_tab in range(tabsNumber):
             self.tabs.append(wx.Panel( self.m_notebook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL ))
             self.m_notebook1.AddPage(self.tabs[each_tab], tabTitle[each_tab], False )
+
+    def On_Message(self, title, content):
+        # Open up a dialog
+        dlg = wx.MessageDialog(self, content, title, wx.OK|wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
 if __name__ == '__main__':
