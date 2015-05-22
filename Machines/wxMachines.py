@@ -32,13 +32,13 @@ node_file_path = "gestalt/examples/machines/htmaa/086-005a.py"
 # Classes
 
 # A class for each Node / Axis
-class wxNode(nodes.networkedGestaltNode):
+class wxMachineNodes():
 
-    def __init__(self, axisNumber = 0, axisName = "0 Axis", fabnet = "", persistence = ""):
+    def __init__(self, axisNumber = 0, fabnet = "", persistence = ""):
         self.linear = True
         self.rotary = False
-        if self.axisName == "" or self.axisName == "0 Axis":
-            self.axisName = str(self.axisNumber)+" Axis"
+        self.axisNumber = axisNumber
+        self.axisName = str(axisNumber)+" Axis"
         self.Node = nodes.networkedGestaltNode(self.axisName, fabnet = fabnet, filename = node_file_path, persistence = persistence)
 
 
@@ -52,6 +52,9 @@ class wxMachine(machines.virtualMachine):
         self.interfaceType = interfaceType
         self.portName = portName
         self.nodesNumber = nodesNumber
+        self.machineNodes = {}
+        self.machineAxes = {}
+        self.machineAxesNode = {}
 
     def initInterfaces(self):
         if self.providedInterface:
@@ -60,19 +63,23 @@ class wxMachine(machines.virtualMachine):
             self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = self.baudRate, interfaceType = self.interfaceType, portName = self.portName))
 
     def initControllers(self):
-        #self.xAxisNode = nodes.networkedGestaltNode('X Axis', self.fabnet, filename = node_file_path, persistence = self.persistence)
-        self.xAxisNode = wxNode()
-        self.xNode = nodes.compoundNode(self.xAxisNode)
+        for each_node in range(self.nodesNumber):
+            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each, fabnet = self.fabnet, persistence = self.persistence )
+        self.machineNodes = nodes.compoundNode(self.machineAxesNodes.values())
 
     def initCoordinates(self):
-        self.position = state.coordinate(['mm'])
+        measure_units = []
+        for each_node in range(self.nodesNumber):
+            measure_units.append('mm')
+        self.position = state.coordinate(measure_units)
 
     def initKinematics(self):
-        self.xAxis = elements.elementChain.forward([elements.microstep.forward(4), elements.stepper.forward(1.8), elements.leadscrew.forward(6.096), elements.invert.forward(True)])
-        self.stageKinematics = kinematics.direct(1)	#direct drive on all axes
+        for each_node in range(self.nodesNumber):
+            self.machineAxes[each_node] = elements.elementChain.forward([elements.microstep.forward(4), elements.stepper.forward(1.8), elements.leadscrew.forward(6.096), elements.invert.forward(True)])
+        self.stageKinematics = kinematics.direct(self.nodesNumber)	#direct drive on all axes
 
     def initFunctions(self):
-        self.move = functions.move(virtualMachine = self, virtualNode = self.xNode, axes = [self.xAxis], kinematics = self.stageKinematics, machinePosition = self.position,planner = 'null')
+        self.move = functions.move(virtualMachine = self, virtualNode = self.machineNodes, axes = [self.machineAxes.values()], kinematics = self.stageKinematics, machinePosition = self.position,planner = 'null')
         self.jog = functions.jog(self.move)	#an incremental wrapper for the move function
 
     def initLast(self):
