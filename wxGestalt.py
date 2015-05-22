@@ -3,7 +3,7 @@
 # Modules
 # Modules for the wx GUI
 import wx
-import GUI.wxClass as wxClass
+import GUI.wxMainApp as wxMainApp
 import Functions.wxFunctions as wxFunctions
 # Module for log
 import sys
@@ -26,7 +26,7 @@ class RedirectText(object):
 
 
 # The class for the main app
-class wxGestaltApp(wxClass.MyFrame1):
+class wxGestaltApp(wxMainApp.MyFrame1):
 
     def __init__(self, *args, **kw):
         super(wxGestaltApp, self).__init__(*args, **kw)
