@@ -32,44 +32,36 @@ node_file_path = "gestalt/examples/machines/htmaa/086-005a.py"
 # Classes
 
 # A class for each Node / Axis
-class wxNode():
+class wxNode(nodes.networkedGestaltNode):
 
-    def __init__(self):
+    def __init__(self, axisNumber = 0, axisName = "0 Axis", fabnet = "", persistence = ""):
         self.linear = True
         self.rotary = False
-
-
-# A basic class for each Machine
-class wxMachine():
-
-    def __init__(self):
-        self.axes = []
-        self.portName = ""
-
-
-# Solo/Independent Nodes
-# http://pygestalt.org/VMC_IEM.pdf
-# p. 35
-class wxSolo_Independent():
-
-    def __init__(self):
-        self.portName = ""
+        if self.axisName == "" or self.axisName == "0 Axis":
+            self.axisName = str(self.axisNumber)+" Axis"
+        self.Node = nodes.networkedGestaltNode(self.axisName, fabnet = fabnet, filename = node_file_path, persistence = persistence)
 
 
 # Solo/Gestalt Nodes, based on https://github.com/imoyer/gestalt/blob/master/examples/machines/htmaa/single_node.py
 # http://pygestalt.org/VMC_IEM.pdf
 # p. 36
-class wxSolo_Gestalt():
+class wxMachine(machines.virtualMachine):
 
-    def __init__(self):
-        self.portName = ""
+    def __init__(self, baudRate = 115200, interfaceType = "ftdi", portName = "", nodesNumber = 1):
+        self.baudRate = baudRate
+        self.interfaceType = interfaceType
+        self.portName = portName
+        self.nodesNumber = nodesNumber
 
     def initInterfaces(self):
-        if self.providedInterface: self.fabnet = self.providedInterface		#providedInterface is defined in the virtualMachine class.
-    else: self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = 115200, interfaceType = 'ftdi', portName = self.portName))
+        if self.providedInterface:
+            self.fabnet = self.providedInterface		#providedInterface is defined in the virtualMachine class.
+        else:
+            self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = self.baudRate, interfaceType = self.interfaceType, portName = self.portName))
 
     def initControllers(self):
-        self.xAxisNode = nodes.networkedGestaltNode('X Axis', self.fabnet, filename = node_file_path, persistence = self.persistence)
+        #self.xAxisNode = nodes.networkedGestaltNode('X Axis', self.fabnet, filename = node_file_path, persistence = self.persistence)
+        self.xAxisNode = wxNode()
         self.xNode = nodes.compoundNode(self.xAxisNode)
 
     def initCoordinates(self):
@@ -101,33 +93,6 @@ class wxSolo_Gestalt():
     def setSpindleSpeed(self, speedFraction):
         #self.machineControl.pwmRequest(speedFraction)
         pass
-
-
-# Networked/Gestalt Nodes
-# http://pygestalt.org/VMC_IEM.pdf
-# p. 36
-class wxNetworked_Gestalt(wxSolo_Gestalt):
-
-    def __init__(self):
-        self.portName = ""
-
-
-# Managed/Gestalt Nodes
-# http://pygestalt.org/VMC_IEM.pdf
-# p. 37
-class wxManaged_Gestalt():
-
-    def __init__(self):
-        self.portName = ""
-
-
-# Compound Nodes
-# http://pygestalt.org/VMC_IEM.pdf
-# p. 38
-class wxCompound_Nodes():
-
-    def __init__(self):
-        self.portName = ""
 
 
 if __name__ == '__main__':
