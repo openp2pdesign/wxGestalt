@@ -27,6 +27,21 @@ class RedirectText(object):
         self.out.WriteText(string)
 
 
+# The class for a tab
+class wxTabTest(wxTab.MyPanel1):
+
+    def On_OrganizeNodes( self, event ):
+        print self.m_spinCtrl1.GetValue()
+        if self.m_spinCtrl1.GetValue() > 2:
+            print 2
+        self.newButton = wx.StaticText( self, wx.ID_ANY, u"Test button")
+
+
+        self.bSizer2.Add(self.newButton, 0, wx.ALL, 5)
+        self.bSizer2.Layout()
+
+
+
 # The class for the main app
 class wxGestaltApp(wxMainApp.MyFrame1):
 
@@ -61,7 +76,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Create tabs in the notebook
         self.tabs = []
         for each_tab in range(tabsNumber):
-            self.tabs.append(wxTab.MyPanel1(self.m_notebook1))
+            self.tabs.append(wxTabTest(self.m_notebook1))
             self.m_notebook1.AddPage(self.tabs[each_tab], tabTitle[each_tab], False )
 
     def On_Message(self, title, content):
