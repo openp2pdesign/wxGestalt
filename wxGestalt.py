@@ -5,15 +5,20 @@
 import wx
 import GUI.wxMainApp as wxMainApp
 import GUI.wxTab as wxTab
+import GUI.wxNodeEdit as wxNodeEdit
 # Various functions
 import Functions.wxFunctions as wxFunctions
 # Module for log
 import sys
+# Module for Gestalt Machines
+import Machines.wxMachines as wxMachines
 
 
 # Variables
 # Current global setting for the Serial port in use
 SerialPortInUse = ""
+# The current machine edited in the app
+currentMachine = wxMachines.wxMachine()
 
 
 # Classes
@@ -31,15 +36,25 @@ class RedirectText(object):
 class wxTabTest(wxTab.MyPanel1):
 
     def On_OrganizeNodes( self, event ):
-        print self.m_spinCtrl1.GetValue()
-        if self.m_spinCtrl1.GetValue() > 2:
-            print 2
-        self.newButton = wx.StaticText( self, wx.ID_ANY, u"Test button")
-
-
-        self.bSizer2.Add(self.newButton, 0, wx.ALL, 5)
-        self.bSizer2.Layout()
-
+        # Add or remove nodes and therefore their GUI editing part
+        if self.m_spinCtrl1.GetValue() < currentMachine.nodesNumber:
+            self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
+        else:
+            nodePage = wx.Panel(self)
+            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
+            #self.ln = wx.StaticLine(self, -1, size=(400,10))
+            #self.newButton = wx.StaticText(self, wx.ID_ANY, u"Node #"+str(currentMachine.nodesNumber))
+            #self.ln.SetSize((30,30))
+            #self.tabs[0].Add(self.ln, 0, wx.ALL, 5)
+            #self.tabs[0].Add(self.newButton, 0, wx.ALL, 5)
+            #self.tabs[0].Layout()
+            #self.bSizer2.Layout()
+        # Update the current Machine and the log
+        currentMachine.nodesNumber = self.m_spinCtrl1.GetValue()
+        if currentMachine.nodesNumber == 1:
+            print "The Machine now has", currentMachine.nodesNumber, "Gestalt node."
+        else:
+            print "The Machine now has", currentMachine.nodesNumber, "Gestalt nodes."
 
 
 # The class for the main app
@@ -47,6 +62,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
     def __init__(self, *args, **kw):
         super(wxGestaltApp, self).__init__(*args, **kw)
+        global currentMachine
         self.InitUI()
 
     def InitUI(self):
