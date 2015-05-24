@@ -67,7 +67,8 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.InitUI()
 
     def InitUI(self):
-        self.On_CreateTab(tabsNumber = 1,tabTitle = ["Welcome"])
+        tab_setup = wxTabSetup(self.m_notebook1)
+        self.m_notebook1.AddPage(tab_setup, "Machine Setup", False )
         self.Show()
 
         # Starting the log
@@ -88,13 +89,6 @@ class wxGestaltApp(wxMainApp.MyFrame1):
             SerialPortInUse = dlg.GetStringSelection()
             print "Connecting to",SerialPortInUse
         dlg.Destroy()
-
-    def On_CreateTab(self, tabsNumber = 1, tabTitle =[]):
-        # Create tabs in the notebook
-        self.tabs = []
-        for each_tab in range(tabsNumber):
-            self.tabs.append(wxTabSetup(self.m_notebook1))
-            self.m_notebook1.AddPage(self.tabs[each_tab], tabTitle[each_tab], False )
 
     def On_Message(self, title, content):
         # Open up a dialog
