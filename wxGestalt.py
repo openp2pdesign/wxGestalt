@@ -4,8 +4,9 @@
 # Modules for the wx GUI
 import wx
 import GUI.wxMainApp as wxMainApp
-import GUI.wxTab as wxTab
+import GUI.wxTabSetup as wxTabSetup
 import GUI.wxNodeEdit as wxNodeEdit
+import GUI.wxNodeTab as wxNodeTab
 # Various functions
 import Functions.wxFunctions as wxFunctions
 # Module for log
@@ -33,14 +34,14 @@ class RedirectText(object):
 
 
 # The class for a tab
-class wxTabTest(wxTab.MyPanel1):
+class wxTabSetup(wxTabSetup.MyPanel1):
 
     def On_OrganizeNodes( self, event ):
         # Add or remove nodes and therefore their GUI editing part
         if self.m_spinCtrl1.GetValue() < currentMachine.nodesNumber:
             self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
         else:
-            nodePage = wx.Panel(self)
+            nodePage = wxNodeTab.MyPanel1(self.m_notebook_nodes)
             self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
             #self.ln = wx.StaticLine(self, -1, size=(400,10))
             #self.newButton = wx.StaticText(self, wx.ID_ANY, u"Node #"+str(currentMachine.nodesNumber))
@@ -92,7 +93,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Create tabs in the notebook
         self.tabs = []
         for each_tab in range(tabsNumber):
-            self.tabs.append(wxTabTest(self.m_notebook1))
+            self.tabs.append(wxTabSetup(self.m_notebook1))
             self.m_notebook1.AddPage(self.tabs[each_tab], tabTitle[each_tab], False )
 
     def On_Message(self, title, content):
