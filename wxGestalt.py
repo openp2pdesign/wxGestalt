@@ -6,6 +6,8 @@ import wx
 import GUI.wxMainApp as wxMainApp
 import GUI.wxTabSetup as wxTabSetup
 import GUI.wxNodeTab as wxNodeTab
+import GUI.wxTabIdentify as wxTabIdentify
+import GUI.wxTabTest as wxTabTest
 # Various functions
 import Functions.wxFunctions as wxFunctions
 # Module for log
@@ -89,15 +91,19 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_setup.m_listBox_interfaceType.SetSelection(0)
         self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
         # Add tab
-        self.m_notebook1.AddPage(self.tab_setup, "Machine Setup", False )
+        self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup", False )
+
+        # Add Identify Tab
+        self.tab_identify = wxTabIdentify.MyPanel1(self.m_notebook1)
+        self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes", False )
 
         # Add Test Tab
-        self.tab_test = wx.Panel(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_test, "Test the Machine", False )
+        self.tab_test = wxTabTest.MyPanel1(self.m_notebook1)
+        self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine", False )
 
         # Add CAM Tab
         self.tab_cam = wx.Panel(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_cam, "CAM job", False )
+        self.m_notebook1.AddPage(self.tab_cam, "4. CAM", False )
 
         # Show the app
         self.Show()
@@ -125,6 +131,19 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         currentMachine.interfaceType = wxMachines.interfacesList[event.GetSelection()]
         print "Connecting with the",currentMachine.interfaceType,"protocol..."
 
+    def On_SelectNotebookPage( self, event):
+        currentMainTab = event.GetSelection()
+        if currentMainTab == 1:
+            #new_button = wx.Button(self.tab_test, label="boh1")
+            #new_text = wx.StaticText( self.tab_test, wx.ID_ANY, u"This...")
+            #self.tab_test.testSizer.Add(new_text)
+            #self.tab_test.testSizer.Add(new_button)
+            #self.tab_test.SetSizer( self.tab_test.bSizer2 )
+            #self.tab_test.testSizer.Layout()
+            print "test"
+            #cbtn.Bind(wx.EVT_BUTTON, self.OnClose)
+
+
     def On_Message(self, title, content):
         # Open up a dialog
         dlg = wx.MessageDialog(self, content, title, wx.OK|wx.ICON_INFORMATION)
@@ -133,7 +152,6 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
 
 if __name__ == '__main__':
-    print wxMachines.baudratesList[16]
     ex = wx.App()
     ex1 = wxGestaltApp(None)
     ex1.Show()
