@@ -72,10 +72,13 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_setup.m_listBox_interfaceType.Set(wxMachines.interfacesList)
         self.tab_setup.m_listBox_interfaceType.SetSelection(0)
         self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
+        # Add tab
         self.m_notebook1.AddPage(self.tab_setup, "Machine Setup", False )
+
         # Add Test Tab
         self.tab_test = wx.Panel(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_test, "Test the Machine", False )
+
         # Add CAM Tab
         self.tab_cam = wx.Panel(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "CAM job", False )
