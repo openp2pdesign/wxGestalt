@@ -60,12 +60,18 @@ class wxGestaltApp(wxMainApp.MyFrame1):
     def InitUI(self):
         # Add Setup Tab
         self.tab_setup = wxTabSetup(self.m_notebook1)
+        # Serial port setup
         self.tab_setup.m_listBox_serialPorts.Bind( wx.EVT_LISTBOX, self.On_ChooseSerialPort )
         SerialPortsAvailable = wxFunctions.ScanSerialPorts()
         self.tab_setup.m_listBox_serialPorts.Set(SerialPortsAvailable)
+        # Baudrate setup
         self.tab_setup.m_listBox_baudrates.Set(wxMachines.baudratesListStrings)
         self.tab_setup.m_listBox_baudrates.SetSelection(16)
         self.tab_setup.m_listBox_baudrates.Bind( wx.EVT_LISTBOX, self.On_ChooseBaudrate )
+        # Interface setup
+        self.tab_setup.m_listBox_interfaceType.Set(wxMachines.interfacesList)
+        self.tab_setup.m_listBox_interfaceType.SetSelection(0)
+        self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
         self.m_notebook1.AddPage(self.tab_setup, "Machine Setup", False )
         # Add Test Tab
         self.tab_test = wx.Panel(self.m_notebook1)
@@ -94,6 +100,12 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         global currentMachine
         currentMachine.baudRate = wxMachines.baudratesList[event.GetSelection()]
         print "Connecting with a baudrate of",currentMachine.baudRate,"..."
+
+    def On_ChooseInterface( self, event ):
+        global currentMachine
+        currentMachine.interfaceType = wxMachines.interfacesList[event.GetSelection()]
+        print "Connecting with the",currentMachine.interfaceType,"protocol..."
+
 
     def On_Message(self, title, content):
         # Open up a dialog
