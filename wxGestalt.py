@@ -30,7 +30,7 @@ class RedirectText(object):
         self.out.WriteText(string)
 
 
-# The class for a tab
+# The class for the Setup tab
 class wxTabSetup(wxTabSetup.MyPanel1):
 
     def On_OrganizeNodes( self, event ):
@@ -38,7 +38,7 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         if self.m_spinCtrl1.GetValue() < currentMachine.nodesNumber:
             self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
         else:
-            nodePage = wxNodeTab.MyPanel1(self.m_notebook_nodes)
+            nodePage = wxNodeTabSetup(self.m_notebook_nodes)
             self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
 
         # Update the current Machine and the log
@@ -47,6 +47,22 @@ class wxTabSetup(wxTabSetup.MyPanel1):
             print "The Machine now has", currentMachine.nodesNumber, "Gestalt node."
         else:
             print "The Machine now has", currentMachine.nodesNumber, "Gestalt nodes."
+
+# The class for the Node tab
+class wxNodeTabSetup(wxNodeTab.MyPanel1):
+
+    def On_ChooseNodeType( self, event):
+        global currentMachine
+        currentNode = self.GetParent().GetSelection()
+        currentType = self.m_radioBox1.GetSelection()
+        if currentType == 0:
+            print "Node #",currentNode+1,"is linear."
+            currentMachine.machineNodes[currentNode].linear = True
+            currentMachine.machineNodes[currentNode].rotary = False
+        else:
+            print "Node #",currentNode+1,"is rotary."
+            currentMachine.machineNodes[currentNode].linear = True
+            currentMachine.machineNodes[currentNode].rotary = False
 
 
 # The class for the main app
@@ -108,7 +124,6 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         global currentMachine
         currentMachine.interfaceType = wxMachines.interfacesList[event.GetSelection()]
         print "Connecting with the",currentMachine.interfaceType,"protocol..."
-
 
     def On_Message(self, title, content):
         # Open up a dialog
