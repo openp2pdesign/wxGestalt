@@ -8,6 +8,7 @@ import GUI.wxTabSetup as wxTabSetup
 import GUI.wxNodeTab as wxNodeTab
 import GUI.wxTabIdentify as wxTabIdentify
 import GUI.wxTabTest as wxTabTest
+import GUI.wxTabCAM as wxTabCAM
 # Various functions
 import Functions.wxFunctions as wxFunctions
 # Module for log
@@ -91,22 +92,19 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_setup.m_listBox_interfaceType.SetSelection(0)
         self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
         # Add tab
-        self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup", False )
+        self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup")
 
         # Add Identify Tab
         self.tab_identify = wxTabIdentify.MyPanel1(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes", False )
+        self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes")
 
         # Add Test Tab
         self.tab_test = wxTabTest.MyPanel1(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine", False )
+        self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
 
         # Add CAM Tab
-        self.tab_cam = wx.Panel(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_cam, "4. CAM", False )
-
-        # Show the app
-        self.Show()
+        self.tab_cam = wxTabCAM.MyPanel1(self.m_notebook1)
+        self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
 
         # Starting the log
         # Redirect text here
@@ -132,15 +130,16 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         print "Connecting with the",currentMachine.interfaceType,"protocol..."
 
     def On_SelectNotebookPage( self, event):
-        currentMainTab = event.GetSelection()
-        if currentMainTab == 1:
+        pass
+        #currentMainTab = event.GetSelection()
+        #if currentMainTab == 1:
             #new_button = wx.Button(self.tab_test, label="boh1")
             #new_text = wx.StaticText( self.tab_test, wx.ID_ANY, u"This...")
             #self.tab_test.testSizer.Add(new_text)
             #self.tab_test.testSizer.Add(new_button)
             #self.tab_test.SetSizer( self.tab_test.bSizer2 )
             #self.tab_test.testSizer.Layout()
-            print "test"
+        #    print "test"
             #cbtn.Bind(wx.EVT_BUTTON, self.OnClose)
 
 
