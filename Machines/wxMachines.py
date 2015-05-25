@@ -44,7 +44,7 @@ class wxMachineNodes():
         self.linear = True
         self.rotary = False
         self.axisNumber = int(axisNumber)
-        self.axisName = "Node #",str(axisNumber)+1
+        self.axisName = "Node #",str(axisNumber+1)
         self.Node = nodes.networkedGestaltNode(self.axisName, fabnet = fabnet, filename = node_file_path, persistence = persistence)
 
 
