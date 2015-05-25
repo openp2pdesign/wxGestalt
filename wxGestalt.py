@@ -5,7 +5,6 @@
 import wx
 import GUI.wxMainApp as wxMainApp
 import GUI.wxTabSetup as wxTabSetup
-import GUI.wxNodeEdit as wxNodeEdit
 import GUI.wxNodeTab as wxNodeTab
 # Various functions
 import Functions.wxFunctions as wxFunctions
