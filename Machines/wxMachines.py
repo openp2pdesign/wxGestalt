@@ -28,6 +28,10 @@ from gestalt.publish import rpc	#remote procedure call dispatcher
 # This is needed for loading the 086-005a.py file from the Gestalt folder
 node_file_path = "gestalt/examples/machines/htmaa/086-005a.py"
 
+# Baudrates
+baudratesList = [50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000]
+baudratesListStrings = [str(i) for i in baudratesList]
+
 
 # Classes
 
@@ -37,21 +41,19 @@ class wxMachineNodes():
     def __init__(self, axisNumber = 0, fabnet = "", persistence = ""):
         self.linear = True
         self.rotary = False
-        self.axisNumber = axisNumber
+        self.axisNumber = int(axisNumber)
         self.axisName = str(axisNumber)+" Axis"
         self.Node = nodes.networkedGestaltNode(self.axisName, fabnet = fabnet, filename = node_file_path, persistence = persistence)
 
 
-# Solo/Gestalt Nodes, based on https://github.com/imoyer/gestalt/blob/master/examples/machines/htmaa/single_node.py
-# http://pygestalt.org/VMC_IEM.pdf
-# p. 36
+# Basic machines made of n gestalt nodes
 class wxMachine(machines.virtualMachine):
 
-    def __init__(self, baudRate = 115200, interfaceType = "ftdi", portName = "", nodesNumber = 1):
+    def __init__(self, baudRate = baudratesList[16], interfaceType = "ftdi", portName = "", nodesNumber = 0):
         self.baudRate = baudRate
         self.interfaceType = interfaceType
         self.portName = portName
-        self.nodesNumber = nodesNumber
+        self.nodesNumber = int(nodesNumber)
         self.machineNodes = {}
         self.machineAxes = {}
         self.machineAxesNode = {}

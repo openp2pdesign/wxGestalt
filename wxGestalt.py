@@ -15,8 +15,6 @@ import Machines.wxMachines as wxMachines
 
 
 # Variables
-# Current global setting for the Serial port in use
-SerialPortInUse = ""
 # The current machine edited in the app
 currentMachine = wxMachines.wxMachine()
 
@@ -42,13 +40,7 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         else:
             nodePage = wxNodeTab.MyPanel1(self.m_notebook_nodes)
             self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
-            #self.ln = wx.StaticLine(self, -1, size=(400,10))
-            #self.newButton = wx.StaticText(self, wx.ID_ANY, u"Node #"+str(currentMachine.nodesNumber))
-            #self.ln.SetSize((30,30))
-            #self.tabs[0].Add(self.ln, 0, wx.ALL, 5)
-            #self.tabs[0].Add(self.newButton, 0, wx.ALL, 5)
-            #self.tabs[0].Layout()
-            #self.bSizer2.Layout()
+
         # Update the current Machine and the log
         currentMachine.nodesNumber = self.m_spinCtrl1.GetValue()
         if currentMachine.nodesNumber == 1:
@@ -66,8 +58,23 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.InitUI()
 
     def InitUI(self):
-        tab_setup = wxTabSetup(self.m_notebook1)
-        self.m_notebook1.AddPage(tab_setup, "Machine Setup", False )
+        # Add Setup Tab
+        self.tab_setup = wxTabSetup(self.m_notebook1)
+        self.tab_setup.m_listBox_serialPorts.Bind( wx.EVT_LISTBOX, self.On_ChooseSerialPort )
+        SerialPortsAvailable = wxFunctions.ScanSerialPorts()
+        self.tab_setup.m_listBox_serialPorts.Set(SerialPortsAvailable)
+        self.tab_setup.m_listBox_baudrates.Set(wxMachines.baudratesListStrings)
+        self.tab_setup.m_listBox_baudrates.SetSelection(16)
+        self.tab_setup.m_listBox_baudrates.Bind( wx.EVT_LISTBOX, self.On_ChooseBaudrate )
+        self.m_notebook1.AddPage(self.tab_setup, "Machine Setup", False )
+        # Add Test Tab
+        self.tab_test = wx.Panel(self.m_notebook1)
+        self.m_notebook1.AddPage(self.tab_test, "Test the Machine", False )
+        # Add CAM Tab
+        self.tab_cam = wx.Panel(self.m_notebook1)
+        self.m_notebook1.AddPage(self.tab_cam, "CAM job", False )
+
+        # Show the app
         self.Show()
 
         # Starting the log
@@ -78,16 +85,15 @@ class wxGestaltApp(wxMainApp.MyFrame1):
     def On_Quit( self, event ):
         self.Close(True)
 
-    def On_ScanSerialPort( self, event ):
-        # looks for available serial ports
-        SerialPortsAvailable = wxFunctions.ScanSerialPorts()
-        global SerialPortInUse
-        # Global variable that can be accessed by the whole program
-        dlg = wx.SingleChoiceDialog(self, 'Choose the serial port for your machine: ', 'Serial port settings', SerialPortsAvailable, wx.CHOICEDLG_STYLE)
-        if dlg.ShowModal() == wx.ID_OK:
-            SerialPortInUse = dlg.GetStringSelection()
-            print "Connecting to",SerialPortInUse
-        dlg.Destroy()
+    def On_ChooseSerialPort( self, event ):
+        global currentMachine
+        currentMachine.portName = event.GetString()
+        print "Connecting to",currentMachine.portName,"..."
+
+    def On_ChooseBaudrate( self, event ):
+        global currentMachine
+        currentMachine.baudRate = wxMachines.baudratesList[event.GetSelection()]
+        print "Connecting with a baudrate of",currentMachine.baudRate,"..."
 
     def On_Message(self, title, content):
         # Open up a dialog
@@ -97,6 +103,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
 
 if __name__ == '__main__':
+    print wxMachines.baudratesList[16]
     ex = wx.App()
     ex1 = wxGestaltApp(None)
     ex1.Show()
