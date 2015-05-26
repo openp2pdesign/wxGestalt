@@ -20,6 +20,7 @@ import Machines.wxMachines as wxMachines
 # Variables
 # The current machine edited in the app
 currentMachine = wxMachines.wxMachine()
+terminal = sys.stdout
 
 
 # Classes
@@ -47,9 +48,10 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         # Update the current Machine and the log
         currentMachine.nodesNumber = self.m_spinCtrl1.GetValue()
         if currentMachine.nodesNumber == 1:
-            print "The Machine now has", currentMachine.nodesNumber, "Gestalt node."
+            message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt node."
         else:
-            print "The Machine now has", currentMachine.nodesNumber, "Gestalt nodes."
+            message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt nodes."
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
 
 # The class for the Node tab
 class wxNodeTabSetup(wxNodeTab.MyPanel1):
@@ -59,14 +61,33 @@ class wxNodeTabSetup(wxNodeTab.MyPanel1):
         currentNode = self.GetParent().GetSelection()
         currentType = self.m_radioBox1.GetSelection()
         if currentType == 0:
-            print "Node #",currentNode+1,"is linear."
+            message = "Node #" + str(currentNode+1) + " is linear."
+            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
             currentMachine.machineNodes[currentNode].linear = True
             currentMachine.machineNodes[currentNode].rotary = False
         else:
-            print "Node #",currentNode+1,"is rotary."
+            message = "Node #" + str(currentNode+1) + " is rotary."
+            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
             currentMachine.machineNodes[currentNode].linear = True
             currentMachine.machineNodes[currentNode].rotary = False
 
+
+# The class for the Identify tab
+class wxTabIdentify(wxTabIdentify.MyPanel1):
+
+    def __init__(self, *args, **kw):
+        super(wxTabIdentify, self).__init__(*args, **kw)
+        global currentMachine
+        self.InitUI()
+
+    def InitUI(self):
+        # Starting the log
+        # Redirect text here
+        self.redir=RedirectText(self.wxLog)
+        sys.stdout=self.redir
+        print "-------------------------------------------------------------------------------"
+        print "Please identify each Gestalt node by pressing on their buttons when asked here:"
+        print
 
 # The class for the main app
 class wxGestaltApp(wxMainApp.MyFrame1):
@@ -97,7 +118,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup")
 
         # Add Identify Tab
-        self.tab_identify = wxTabIdentify.MyPanel1(self.m_notebook1)
+        self.tab_identify = wxTabIdentify(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes")
 
         # Add Test Tab
@@ -108,35 +129,30 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_cam = wxTabCAM.MyPanel1(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
 
-
-        # Starting the log
-        # Redirect text here
-        redir=RedirectText(self.wxLog)
-        sys.stdout=redir
-
     def On_Quit( self, event ):
         self.Close(True)
 
     def On_ChooseSerialPort( self, event ):
         global currentMachine
         currentMachine.portName = event.GetString()
-        print "Connecting to",currentMachine.portName,"..."
+        message = "Connecting to " + currentMachine.portName + " ..."
+        self.m_statusBar1.SetStatusText(message, 0)
 
     def On_ChooseBaudrate( self, event ):
         global currentMachine
         currentMachine.baudRate = wxMachines.baudratesList[event.GetSelection()]
-        print "Connecting with a baudrate of",currentMachine.baudRate,"..."
+        message = "Connecting with a baudrate of ",currentMachine.baudRate,"..."
+        self.m_statusBar1.SetStatusText(message, 0)
 
     def On_ChooseInterface( self, event ):
         global currentMachine
         currentMachine.interfaceType = wxMachines.interfacesList[event.GetSelection()]
-        print "Connecting with the",currentMachine.interfaceType,"protocol..."
+        message = "Connecting with the ",currentMachine.interfaceType," protocol..."
+        self.m_statusBar1.SetStatusText(message, 0)
 
     def On_SelectNotebookPage( self, event):
         currentMainTab = event.GetSelection()
-        print currentMainTab
         event.Skip()
-
 
     def On_Message(self, title, content):
         # Open up a dialog
