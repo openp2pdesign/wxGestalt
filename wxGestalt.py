@@ -134,15 +134,8 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
     def On_SelectNotebookPage( self, event):
         currentMainTab = event.GetSelection()
-        if currentMainTab == 1:
-            #new_button = wx.Button(self.tab_test, label="boh1")
-            #new_text = wx.StaticText( self.tab_test, wx.ID_ANY, u"This...")
-            #self.tab_test.testSizer.Add(new_text)
-            #self.tab_test.testSizer.Add(new_button)
-            #self.tab_test.SetSizer( self.tab_test.bSizer2 )
-            #self.tab_test.testSizer.Layout()
-            print "test"
-            #cbtn.Bind(wx.EVT_BUTTON, self.OnClose)
+        print currentMainTab
+        event.Skip()
 
 
     def On_Message(self, title, content):
