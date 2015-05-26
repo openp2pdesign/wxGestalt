@@ -89,6 +89,20 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         print "Please identify each Gestalt node by pressing on their buttons when asked here:"
         print
 
+
+# The class for the CAM tab
+class wxTabCAM(wxTabCAM.MyPanel1):
+
+    def On_LoadFile( self, event ):
+        self.m_textCtrl1.SetStatusText("pippo")
+
+    def On_SaveCAM( self, event ):
+        event.Skip()
+
+    def On_LaunchCAM( self, event ):
+        event.Skip()
+
+
 # The class for the main app
 class wxGestaltApp(wxMainApp.MyFrame1):
 
@@ -126,7 +140,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
 
         # Add CAM Tab
-        self.tab_cam = wxTabCAM.MyPanel1(self.m_notebook1)
+        self.tab_cam = wxTabCAM(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
 
     def On_Quit( self, event ):
