@@ -77,6 +77,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.InitUI()
 
     def InitUI(self):
+
         # Add Setup Tab
         self.tab_setup = wxTabSetup(self.m_notebook1)
         # Serial port setup
@@ -91,6 +92,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_setup.m_listBox_interfaceType.Set(wxMachines.interfacesList)
         self.tab_setup.m_listBox_interfaceType.SetSelection(0)
         self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
+
         # Add tab
         self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup")
 
@@ -105,6 +107,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Add CAM Tab
         self.tab_cam = wxTabCAM.MyPanel1(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
+
 
         # Starting the log
         # Redirect text here
@@ -130,16 +133,15 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         print "Connecting with the",currentMachine.interfaceType,"protocol..."
 
     def On_SelectNotebookPage( self, event):
-        pass
-        #currentMainTab = event.GetSelection()
-        #if currentMainTab == 1:
+        currentMainTab = event.GetSelection()
+        if currentMainTab == 1:
             #new_button = wx.Button(self.tab_test, label="boh1")
             #new_text = wx.StaticText( self.tab_test, wx.ID_ANY, u"This...")
             #self.tab_test.testSizer.Add(new_text)
             #self.tab_test.testSizer.Add(new_button)
             #self.tab_test.SetSizer( self.tab_test.bSizer2 )
             #self.tab_test.testSizer.Layout()
-        #    print "test"
+            print "test"
             #cbtn.Bind(wx.EVT_BUTTON, self.OnClose)
 
 
