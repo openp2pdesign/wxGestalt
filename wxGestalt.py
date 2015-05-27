@@ -155,13 +155,13 @@ class wxGestaltApp(wxMainApp.MyFrame1):
     def On_ChooseBaudrate( self, event ):
         global currentMachine
         currentMachine.baudRate = wxMachines.baudratesList[event.GetSelection()]
-        message = "Connecting with a baudrate of ",currentMachine.baudRate,"..."
+        message = "Connecting with a baudrate of " + str(currentMachine.baudRate) + "..."
         self.m_statusBar1.SetStatusText(message, 0)
 
     def On_ChooseInterface( self, event ):
         global currentMachine
         currentMachine.interfaceType = wxMachines.interfacesList[event.GetSelection()]
-        message = "Connecting with the ",currentMachine.interfaceType," protocol..."
+        message = "Connecting with the " + currentMachine.interfaceType + " protocol..."
         self.m_statusBar1.SetStatusText(message, 0)
 
     def On_SelectNotebookPage( self, event):
