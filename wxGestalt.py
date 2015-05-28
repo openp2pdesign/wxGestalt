@@ -93,22 +93,15 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         self.InitUI()
 
     def InitUI(self):
-        pass
+        self.UpdateUI()
 
     def UpdateUI(self):
 
         global currentMachine
 
-        print "-------------------------------------------------------------------------------"
-        print "Please identify each Gestalt node by pressing on their buttons when asked here:"
-        print
 
-        print "current",currentMachine
-        print "current machine nodes number",currentMachine.nodesNumber
-        print "current machine nodes",currentMachine.machineNodes
-        print "port", currentMachine.portName
 
-        currentMachine.initMachine()
+
 
 
         #currentMachine.machineNodes.setVelocityRequest(8)
@@ -124,6 +117,18 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         #     while status['stepsRemaining'] > 0:
         #         time.sleep(0.001)
         #         status = currentMachine.machineNodes.spinStatusRequest()
+
+
+    def On_InitializeMachine( self, event ):
+        print "-------------------------------------------------------------------------------"
+        print "Please identify each Gestalt node by pressing on their buttons when asked here:"
+        print
+
+        print "DEBUG: current",currentMachine
+        print "DEBUG: current machine nodes number",currentMachine.nodesNumber
+        print "DEBUG: current machine nodes",currentMachine.machineNodes
+        print "DEBUG: port", currentMachine.portName
+        #currentMachine.initMachine()
 
 
 # The class for the CAM tab
@@ -202,8 +207,8 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
     def On_SelectNotebookPage( self, event):
         currentMainTab = event.GetSelection()
-        if currentMainTab == 1 and currentMachine.nodesNumber != 0:
-            self.tab_identify.UpdateUI()
+        #if currentMainTab == 1 and currentMachine.nodesNumber != 0:
+        #    self.tab_identify.UpdateUI()
         event.Skip()
 
     def On_Message(self, title, content):
