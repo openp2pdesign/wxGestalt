@@ -93,17 +93,6 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         self.InitUI()
 
     def InitUI(self):
-        self.UpdateUI()
-
-    def UpdateUI(self):
-
-        global currentMachine
-
-
-
-
-
-
         #currentMachine.machineNodes.setVelocityRequest(8)
 
         # Some random moves to test with
@@ -120,6 +109,7 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
 
 
     def On_InitializeMachine( self, event ):
+        global currentMachine
         print "-------------------------------------------------------------------------------"
         print "Please identify each Gestalt node by pressing on their buttons when asked here:"
         print
@@ -128,7 +118,7 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         print "DEBUG: current machine nodes number",currentMachine.nodesNumber
         print "DEBUG: current machine nodes",currentMachine.machineNodes
         print "DEBUG: port", currentMachine.portName
-        #currentMachine.initMachine()
+        currentMachine.initMachine()
 
 
 # The class for the CAM tab
