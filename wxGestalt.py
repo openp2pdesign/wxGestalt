@@ -177,6 +177,8 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         event.Skip()
 
     def On_LaunchCAM( self, event ):
+        self.GetParent().GetParent().tab_go = wxTabCAM(self.GetParent().GetParent().m_notebook1)
+        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
         event.Skip()
 
 
