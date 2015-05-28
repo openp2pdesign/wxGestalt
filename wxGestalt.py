@@ -15,6 +15,8 @@ import Functions.wxFunctions as wxFunctions
 import sys
 # Module for Gestalt Machines
 import Machines.wxMachines as wxMachines
+# sleep
+from time import sleep
 
 
 # Variables
@@ -38,20 +40,30 @@ class RedirectText(object):
 class wxTabSetup(wxTabSetup.MyPanel1):
 
     def On_OrganizeNodes( self, event ):
+
+        global currentMachine
+
         # Add or remove nodes and therefore their GUI editing part
         if self.m_spinCtrl1.GetValue() < currentMachine.nodesNumber:
             self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
+            currentMachine.nodesNumber -=1
         else:
             nodePage = wxNodeTabSetup(self.m_notebook_nodes)
             self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
+            currentMachine.nodesNumber += 1
 
-        # Update the current Machine and the log
-        currentMachine.nodesNumber = self.m_spinCtrl1.GetValue()
+        # Feedback on the status bar
         if currentMachine.nodesNumber == 1:
             message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt node."
         else:
             message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt nodes."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+
+        # Create the nodes
+        for k in range(currentMachine.nodesNumber):
+            currentMachine.machineNodes[k] = wxMachines.wxMachineNodes(axisNumber = k)
+
+
 
 # The class for the Node tab
 class wxNodeTabSetup(wxNodeTab.MyPanel1):
@@ -78,16 +90,41 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
     def __init__(self, *args, **kw):
         super(wxTabIdentify, self).__init__(*args, **kw)
         global currentMachine
-        self.InitUI()
 
-    def InitUI(self):
         # Starting the log
         # Redirect text here
         self.redir=RedirectText(self.wxLog)
         sys.stdout=self.redir
+        self.InitUI()
+
+    def InitUI(self):
+        pass
+
+    def UpdateUI(self):
+
+        global currentMachine
+
         print "-------------------------------------------------------------------------------"
         print "Please identify each Gestalt node by pressing on their buttons when asked here:"
         print
+
+        print "current",currentMachine
+        print "current machine nodes number",currentMachine.nodesNumber
+        print "current machine nodes",currentMachine.machineNodes
+        print "port", currentMachine.portName
+        #currentMachine.machineNodes.setVelocityRequest(8)
+
+        # Some random moves to test with
+        moves = [[10,10],[20,20],[10,10],[0,0]]
+
+        # Test move
+        # for move in moves:
+        #     currentMachine.move(move, 0)
+        #     status = currentMachine.machineNodes.spinStatusRequest()
+        #     # This checks to see if the move is done.
+        #     while status['stepsRemaining'] > 0:
+        #         time.sleep(0.001)
+        #         status = currentMachine.machineNodes.spinStatusRequest()
 
 
 # The class for the CAM tab
@@ -166,6 +203,8 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
     def On_SelectNotebookPage( self, event):
         currentMainTab = event.GetSelection()
+        if currentMainTab == 1 and currentMachine.nodesNumber != 0:
+            self.tab_identify.UpdateUI()
         event.Skip()
 
     def On_Message(self, title, content):
