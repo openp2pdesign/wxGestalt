@@ -95,10 +95,6 @@ class wxNodeTabSetup(wxNodeTab.MyPanel1):
 # The class for the Identify tab
 class wxTabIdentify(wxTabIdentify.MyPanel1):
 
-    def __init__(self, *args, **kw):
-         super(wxTabIdentify, self).__init__(*args, **kw)
-         global currentMachine
-
     #
     #     #currentMachine.machineNodes.setVelocityRequest(8)
     #
@@ -117,19 +113,10 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
 
     def On_InitializeMachine( self, event ):
         global currentMachine
-        # print "-------------------------------------------------------------------------------"
-        # print "Please identify each Gestalt node by pressing on their buttons when asked here:"
-        # print
-        #
-        # print "DEBUG: current",currentMachine
-        # print "DEBUG: current machine nodes number",currentMachine.nodesNumber
-        # print "DEBUG: current machine nodes",currentMachine.machineNodes
-        # print "DEBUG: port", currentMachine.portName
-        self.initialize = InitThread()
-        event.Skip()
-
-    def On_StopInitialization( self, event ):
-        self.initialize.stop()
+        print "---------------------------------------------------------------------------------------------------------------"
+        print "Please identify each Gestalt node by pressing on their buttons when asked here:"
+        print
+        initialize = InitThread()
         event.Skip()
 
 
