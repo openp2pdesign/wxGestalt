@@ -56,13 +56,16 @@ class wxMachine(machines.virtualMachine):
         self.providedInterface = interface
         self.interfaceType = interfaceType
         self.portName = portName
-        self.initInterfaces()
         self.nodesNumber = int(nodesNumber)
         self.machineNodes = {}
-        self.updateNodes()
         self.machineAxes = {}
         self.machineAxesNode = {}
         self.providedInterface = interface
+
+
+    def initMachine(self):
+        self.initInterfaces()
+        self.updateNodes()
 
 
     def updateNodes(self):
