@@ -6,7 +6,7 @@
 import sys
 import os
 
-# Change the Python Path
+# Change the Python Path if needed
 base_dir = os.path.dirname(__file__) or '.'
 appdir = os.path.abspath(os.path.join(base_dir, os.pardir))
 sys.path.insert(0, appdir)
@@ -40,31 +40,41 @@ interfacesList = ['ftdi','lufa','genericSerial']
 # A class for each Node / Axis
 class wxMachineNodes():
 
-    def __init__(self, axisNumber = 0, fabnet = "", persistence = ""):
+    def __init__(self, axisNumber = 0, interface = None, persistence = ""):
         self.linear = True
         self.rotary = False
         self.axisNumber = int(axisNumber)
         self.axisName = "Node #",str(axisNumber+1)
-        self.Node = nodes.networkedGestaltNode(self.axisName, fabnet = fabnet, filename = node_file_path, persistence = persistence)
+        self.Node = nodes.networkedGestaltNode(self.axisName, interface = interface, filename = node_file_path, persistence = persistence)
 
 
 # Basic machines made of n gestalt nodes
 class wxMachine(machines.virtualMachine):
 
-    def __init__(self, baudRate = baudratesList[16], interfaceType = "ftdi", portName = "", nodesNumber = 0):
+    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0):
         self.baudRate = baudRate
+        self.providedInterface = interface
         self.interfaceType = interfaceType
         self.portName = portName
+        self.initInterfaces()
         self.nodesNumber = int(nodesNumber)
         self.machineNodes = {}
+        self.updateNodes()
         self.machineAxes = {}
         self.machineAxesNode = {}
+        self.providedInterface = interface
+
+
+    def updateNodes(self):
+        for each_node in range(nodesNumber):
+            self.machineNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet)
 
     def initInterfaces(self):
         if self.providedInterface:
             self.fabnet = self.providedInterface		#providedInterface is defined in the virtualMachine class.
         else:
             self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = self.baudRate, interfaceType = self.interfaceType, portName = self.portName))
+        return self.fabnet
 
     def initControllers(self):
         for each_node in range(self.nodesNumber):
