@@ -40,18 +40,19 @@ interfacesList = ['ftdi','lufa','genericSerial']
 # A class for each Node / Axis
 class wxMachineNodes():
 
-    def __init__(self, axisNumber = 0, interface = None, persistence = ""):
+    def __init__(self, axisNumber = 0, interface = None, persistence = "wxGestalt.vmp"):
         self.linear = True
         self.rotary = False
         self.axisNumber = int(axisNumber)
         self.axisName = "Node #",str(axisNumber+1)
-        self.Node = nodes.networkedGestaltNode(self.axisName, interface = interface, filename = node_file_path, persistence = persistence)
+        self.Node = nodes.networkedGestaltNode(self.axisName, interface = interface, persistenceFile = persistence)
 
 
 # Basic machines made of n gestalt nodes
 class wxMachine(machines.virtualMachine):
 
-    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0):
+    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistence = "wxGestalt.vmp"):
+        self.persistence = persistence
         self.baudRate = baudRate
         self.providedInterface = interface
         self.interfaceType = interfaceType
@@ -65,12 +66,8 @@ class wxMachine(machines.virtualMachine):
 
     def initMachine(self):
         self.initInterfaces()
-        self.updateNodes()
+        self.initControllers()
 
-
-    def updateNodes(self):
-        for each_node in range(nodesNumber):
-            self.machineNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet)
 
     def initInterfaces(self):
         if self.providedInterface:
@@ -81,7 +78,7 @@ class wxMachine(machines.virtualMachine):
 
     def initControllers(self):
         for each_node in range(self.nodesNumber):
-            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each, fabnet = self.fabnet, persistence = self.persistence )
+            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence )
         self.machineNodes = nodes.compoundNode(self.machineAxesNodes.values())
 
     def initCoordinates(self):

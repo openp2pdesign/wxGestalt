@@ -21,7 +21,7 @@ from time import sleep
 
 # Variables
 # The current machine edited in the app
-currentMachine = wxMachines.wxMachine()
+currentMachine = wxMachines.wxMachine(persistence="debug.vmp")
 terminal = sys.stdout
 
 
@@ -58,11 +58,6 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         else:
             message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt nodes."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-
-        # Create the nodes
-        for k in range(currentMachine.nodesNumber):
-            currentMachine.machineNodes[k] = wxMachines.wxMachineNodes(axisNumber = k)
-
 
 
 # The class for the Node tab
@@ -112,6 +107,10 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         print "current machine nodes number",currentMachine.nodesNumber
         print "current machine nodes",currentMachine.machineNodes
         print "port", currentMachine.portName
+
+        currentMachine.initMachine()
+
+
         #currentMachine.machineNodes.setVelocityRequest(8)
 
         # Some random moves to test with
