@@ -17,7 +17,9 @@ Install with:
 
 ## Install
 `git clone https://github.com/openp2pdesign/wxGestalt.git`
+
 `cd wxGestalt`
+
 `git submodule update --init gestalt`
 
 
