@@ -111,38 +111,57 @@ class wxTabTest(wxTabTest.MyPanel1):
         global currentMachine
         self.GetParent().GetParent().m_statusBar1.SetStatusText(str(currentMachine.nodesNumber), 0)
         #self.GetParent().GetParent().On_Message("titolo", str(currentMachine.nodesNumber))
-
+        # Clean previous interface
         for k in range(len(self.control)):
             self.controlSizer.Hide(self.control[k])
             self.controlSizer.Remove(self.control[k])
             self.controlSizer.Hide(self.label[k])
             self.controlSizer.Remove(self.label[k])
+            self.controlSizer.Hide(self.button[k])
+            self.controlSizer.Remove(self.button[k])
         del self.control
         del self.label
+        del self.button
         self.control = {}
         self.label = {}
+        self.button = {}
 
+        # Create the new interface
         for g in range(currentMachine.nodesNumber):
             self.label[g] = wx.StaticText( self, wx.ID_ANY, "Node #"+str(g+1), (10, 50+100*g), wx.DefaultSize, 0 )
             self.label[g].Wrap( -1 )
             self.controlSizer.Add( self.label[g], 0, wx.ALL, 5 )
             self.control[g] = wx.Slider( self, wx.ID_ANY, 50, 0, 100, (100, 50+100*g), wx.DefaultSize, wx.SL_HORIZONTAL )
             self.controlSizer.Add( self.control[g], 0, wx.ALL, 5 )
+            self.button[g] = wx.Button( self, wx.ID_ANY, u"Test this node", (300, 50+100*g-5), wx.DefaultSize, 0 )
+            self.controlSizer.Add( self.button[g], 0, wx.ALL, 5 )
+            self.button[g].Bind( wx.EVT_BUTTON, self.On_TestNode(g) )
 
-#
-#     #currentMachine.machineNodes.setVelocityRequest(8)
-#
-#     # Some random moves to test with
-#     moves = [[10,10],[20,20],[10,10],[0,0]]
+    def On_TestNode(event,number):
+        global currentMachine
+        #currentMachine.machineNodes.setVelocityRequest(8)
+        # Some random moves to test with
+        if number == 0:
+            moves = [0,10,20,30]
+        elif number == 1:
+            moves = [[10,10],[20,20],[10,10],[0,0]]
+        elif number == 2:
+            moves = [[10,10,10],[20,20,10],[10,10,10],[0,0]]
+        elif number == 3:
+            moves = [[10,10],[20,20],[10,10],[0,0]]
 
-    # Test move
-    # for move in moves:
-    #     currentMachine.move(move, 0)
-    #     status = currentMachine.machineNodes.spinStatusRequest()
-    #     # This checks to see if the move is done.
-    #     while status['stepsRemaining'] > 0:
-    #         time.sleep(0.001)
-    #         status = currentMachine.machineNodes.spinStatusRequest()
+        # Setup
+        currentMachine.initCoordinates()
+        currentMachine.initKinematics()
+        currentMachine.initFunctions()
+        #Test move
+        for move in moves:
+            currentMachine.move(move, 0)
+            status = currentMachine.machineNodes.spinStatusRequest()
+            # This checks to see if the move is done.
+            while status['stepsRemaining'] > 0:
+                time.sleep(0.001)
+                status = currentMachine.machineNodes.spinStatusRequest()
 
 
 # The class for the CAM tab

@@ -67,6 +67,7 @@ class wxMachine(machines.virtualMachine):
     def initMachine(self):
         self.initInterfaces()
         self.initControllers()
+        #self.initFunctions()
 
 
     def initInterfaces(self):
@@ -86,6 +87,7 @@ class wxMachine(machines.virtualMachine):
         measure_units = []
         for each_node in range(self.nodesNumber):
             measure_units.append('mm')
+        print measure_units
         self.position = state.coordinate(measure_units)
 
     def initKinematics(self):
