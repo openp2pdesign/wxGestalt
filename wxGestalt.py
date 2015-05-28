@@ -95,22 +95,6 @@ class wxNodeTabSetup(wxNodeTab.MyPanel1):
 # The class for the Identify tab
 class wxTabIdentify(wxTabIdentify.MyPanel1):
 
-    #
-    #     #currentMachine.machineNodes.setVelocityRequest(8)
-    #
-    #     # Some random moves to test with
-    #     moves = [[10,10],[20,20],[10,10],[0,0]]
-
-        # Test move
-        # for move in moves:
-        #     currentMachine.move(move, 0)
-        #     status = currentMachine.machineNodes.spinStatusRequest()
-        #     # This checks to see if the move is done.
-        #     while status['stepsRemaining'] > 0:
-        #         time.sleep(0.001)
-        #         status = currentMachine.machineNodes.spinStatusRequest()
-
-
     def On_InitializeMachine( self, event ):
         global currentMachine
         print "---------------------------------------------------------------------------------------------------------------"
@@ -118,6 +102,47 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
         print
         initialize = InitThread()
         event.Skip()
+
+
+# The class for the Test tab
+class wxTabTest(wxTabTest.MyPanel1):
+
+    def InitUI(self):
+        global currentMachine
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(str(currentMachine.nodesNumber), 0)
+        #self.GetParent().GetParent().On_Message("titolo", str(currentMachine.nodesNumber))
+
+        for k in range(len(self.control)):
+            self.controlSizer.Hide(self.control[k])
+            self.controlSizer.Remove(self.control[k])
+            self.controlSizer.Hide(self.label[k])
+            self.controlSizer.Remove(self.label[k])
+        del self.control
+        del self.label
+        self.control = {}
+        self.label = {}
+
+        for g in range(currentMachine.nodesNumber):
+            self.label[g] = wx.StaticText( self, wx.ID_ANY, "Node #"+str(g+1), (10, 50+100*g), wx.DefaultSize, 0 )
+            self.label[g].Wrap( -1 )
+            self.controlSizer.Add( self.label[g], 0, wx.ALL, 5 )
+            self.control[g] = wx.Slider( self, wx.ID_ANY, 50, 0, 100, (100, 50+100*g), wx.DefaultSize, wx.SL_HORIZONTAL )
+            self.controlSizer.Add( self.control[g], 0, wx.ALL, 5 )
+
+#
+#     #currentMachine.machineNodes.setVelocityRequest(8)
+#
+#     # Some random moves to test with
+#     moves = [[10,10],[20,20],[10,10],[0,0]]
+
+    # Test move
+    # for move in moves:
+    #     currentMachine.move(move, 0)
+    #     status = currentMachine.machineNodes.spinStatusRequest()
+    #     # This checks to see if the move is done.
+    #     while status['stepsRemaining'] > 0:
+    #         time.sleep(0.001)
+    #         status = currentMachine.machineNodes.spinStatusRequest()
 
 
 # The class for the CAM tab
@@ -171,7 +196,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes")
 
         # Add Test Tab
-        self.tab_test = wxTabTest.MyPanel1(self.m_notebook1)
+        self.tab_test = wxTabTest(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
 
         # Add CAM Tab
@@ -200,11 +225,13 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         message = "Connecting with the " + currentMachine.interfaceType + " protocol..."
         self.m_statusBar1.SetStatusText(message, 0)
 
-    #def On_SelectNotebookPage( self, event):
-        #currentMainTab = event.GetSelection()
-        #if currentMainTab == 1 and currentMachine.nodesNumber != 0:
+    def On_SelectNotebookPage( self, event):
+        currentMainTab = event.GetSelection()
+        if currentMainTab == 2 and currentMachine.nodesNumber != 0:
+            self.tab_test.InitUI()
+
         #    self.tab_identify.UpdateUI()
-    #    event.Skip()
+        event.Skip()
 
     def On_Message(self, title, content):
         # Open up a dialog
