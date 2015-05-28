@@ -168,8 +168,7 @@ class wxTabTest(wxTabTest.MyPanel1):
 class wxTabCAM(wxTabCAM.MyPanel1):
 
     def On_LoadFile( self, event ):
-        #self.m_textCtrl1.SetStatusText("pippo")
-        print "load"
+        self.m_textCtrl1.LoadFile(event.GetPath())
         event.Skip()
 
     def On_SaveCAM( self, event ):
