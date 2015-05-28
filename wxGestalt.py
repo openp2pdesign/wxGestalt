@@ -11,12 +11,15 @@ import GUI.wxTabTest as wxTabTest
 import GUI.wxTabCAM as wxTabCAM
 # Various functions
 import Functions.wxFunctions as wxFunctions
+import Functions.wxSubThread as wxSubThread
 # Module for log
 import sys
 # Module for Gestalt Machines
 import Machines.wxMachines as wxMachines
 # sleep
 from time import sleep
+# Import gestalt
+from gestalt import utilities
 
 
 # Variables
@@ -27,13 +30,23 @@ terminal = sys.stdout
 
 # Classes
 # Class for redirecting the terminal to the log screen
-class RedirectText(object):
+class RedirectText():
     # Redirect the print message to the Status log area
     def __init__(self,aWxTextCtrl):
         self.out=aWxTextCtrl
 
-    def write(self,string):
-        self.out.WriteText(string)
+    #def write(self,string):
+    #    self.out.WriteText(string)
+    def write(self, string):
+        wx.CallAfter(self.out.WriteText, string)
+
+
+# Class for threading: for managing the gestalt nodes, which is a long process
+class InitThread(wxSubThread.SimpleThread):
+
+    def run(self):
+        global currentMachine
+        currentMachine.initMachine()
 
 
 # The class for the Setup tab
@@ -83,20 +96,14 @@ class wxNodeTabSetup(wxNodeTab.MyPanel1):
 class wxTabIdentify(wxTabIdentify.MyPanel1):
 
     def __init__(self, *args, **kw):
-        super(wxTabIdentify, self).__init__(*args, **kw)
-        global currentMachine
+         super(wxTabIdentify, self).__init__(*args, **kw)
+         global currentMachine
 
-        # Starting the log
-        # Redirect text here
-        self.redir=RedirectText(self.wxLog)
-        sys.stdout=self.redir
-        self.InitUI()
-
-    def InitUI(self):
-        #currentMachine.machineNodes.setVelocityRequest(8)
-
-        # Some random moves to test with
-        moves = [[10,10],[20,20],[10,10],[0,0]]
+    #
+    #     #currentMachine.machineNodes.setVelocityRequest(8)
+    #
+    #     # Some random moves to test with
+    #     moves = [[10,10],[20,20],[10,10],[0,0]]
 
         # Test move
         # for move in moves:
@@ -110,24 +117,33 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
 
     def On_InitializeMachine( self, event ):
         global currentMachine
-        print "-------------------------------------------------------------------------------"
-        print "Please identify each Gestalt node by pressing on their buttons when asked here:"
-        print
+        # print "-------------------------------------------------------------------------------"
+        # print "Please identify each Gestalt node by pressing on their buttons when asked here:"
+        # print
+        #
+        # print "DEBUG: current",currentMachine
+        # print "DEBUG: current machine nodes number",currentMachine.nodesNumber
+        # print "DEBUG: current machine nodes",currentMachine.machineNodes
+        # print "DEBUG: port", currentMachine.portName
+        self.initialize = InitThread()
+        event.Skip()
 
-        print "DEBUG: current",currentMachine
-        print "DEBUG: current machine nodes number",currentMachine.nodesNumber
-        print "DEBUG: current machine nodes",currentMachine.machineNodes
-        print "DEBUG: port", currentMachine.portName
-        currentMachine.initMachine()
+    def On_StopInitialization( self, event ):
+        self.initialize.stop()
+        event.Skip()
 
 
 # The class for the CAM tab
 class wxTabCAM(wxTabCAM.MyPanel1):
 
     def On_LoadFile( self, event ):
-        self.m_textCtrl1.SetStatusText("pippo")
+        #self.m_textCtrl1.SetStatusText("pippo")
+        print "load"
+        event.Skip()
 
     def On_SaveCAM( self, event ):
+        self.GetParent().GetParent().On_Message("titolo","contenuto")
+        print "SAve"
         event.Skip()
 
     def On_LaunchCAM( self, event ):
@@ -140,6 +156,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
     def __init__(self, *args, **kw):
         super(wxGestaltApp, self).__init__(*args, **kw)
         global currentMachine
+
         self.InitUI()
 
     def InitUI(self):
@@ -174,6 +191,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_cam = wxTabCAM(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
 
+
     def On_Quit( self, event ):
         self.Close(True)
 
@@ -195,11 +213,11 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         message = "Connecting with the " + currentMachine.interfaceType + " protocol..."
         self.m_statusBar1.SetStatusText(message, 0)
 
-    def On_SelectNotebookPage( self, event):
-        currentMainTab = event.GetSelection()
+    #def On_SelectNotebookPage( self, event):
+        #currentMainTab = event.GetSelection()
         #if currentMainTab == 1 and currentMachine.nodesNumber != 0:
         #    self.tab_identify.UpdateUI()
-        event.Skip()
+    #    event.Skip()
 
     def On_Message(self, title, content):
         # Open up a dialog
@@ -212,4 +230,8 @@ if __name__ == '__main__':
     ex = wx.App()
     ex1 = wxGestaltApp(None)
     ex1.Show()
+    # Starting the log
+    # Redirect text here
+    redir=RedirectText(ex1.tab_identify.wxLog)
+    sys.stdout=redir
     ex.MainLoop()
