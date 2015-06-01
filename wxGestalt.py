@@ -25,6 +25,7 @@ from gestalt import utilities
 # Variables
 # The current machine edited in the app
 currentMachine = wxMachines.wxMachine(persistence="debug.vmp")
+GUImachine = wxMachines.wxMachineGUI()
 terminal = sys.stdout
 
 
@@ -54,42 +55,46 @@ class wxTabSetup(wxTabSetup.MyPanel1):
 
     def On_OrganizeNodes( self, event ):
 
-        global currentMachine
+        global GUImachine
 
         # Add or remove nodes and therefore their GUI editing part
-        if self.m_spinCtrl1.GetValue() < currentMachine.nodesNumber:
+        if self.m_spinCtrl1.GetValue() < GUImachine.nodesNumber:
             self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
-            currentMachine.nodesNumber -=1
+            GUImachine.nodesNumber -=1
         else:
             nodePage = wxNodeTabSetup(self.m_notebook_nodes)
-            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(currentMachine.nodesNumber+1))
-            currentMachine.nodesNumber += 1
+            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
+            GUImachine.nodesNumber += 1
 
         # Feedback on the status bar
-        if currentMachine.nodesNumber == 1:
-            message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt node."
+        if GUImachine.nodesNumber == 1:
+            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt node."
         else:
-            message = "The Machine now has " + str(currentMachine.nodesNumber) + " Gestalt nodes."
+            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt nodes."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+
+        # Update the virtual class for the machine in the GUI
+        GUImachine.initNodesGUI(GUImachine.nodesNumber)
 
 
 # The class for the Node tab
 class wxNodeTabSetup(wxNodeTab.MyPanel1):
 
     def On_ChooseNodeType( self, event):
-        global currentMachine
+        global GUImachine
+
         currentNode = self.GetParent().GetSelection()
         currentType = self.m_radioBox1.GetSelection()
         if currentType == 0:
             message = "Node #" + str(currentNode+1) + " is linear."
             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-            currentMachine.machineNodes[currentNode].linear = True
-            currentMachine.machineNodes[currentNode].rotary = False
+            GUImachine.nodesGUI[currentNode]["linear"] = True
+            GUImachine.nodesGUI[currentNode]["rotary"] = False
         else:
             message = "Node #" + str(currentNode+1) + " is rotary."
             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-            currentMachine.machineNodes[currentNode].linear = True
-            currentMachine.machineNodes[currentNode].rotary = False
+            GUImachine.nodesGUI[currentNode]["linear"] = True
+            GUImachine.nodesGUI[currentNode]["rotary"] = False
 
 
 # The class for the Identify tab
@@ -97,10 +102,17 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
 
     def On_InitializeMachine( self, event ):
         global currentMachine
+        global GUImachine
+
+        currentMachine = wxMachines.wxMachine(nodesNumber = GUImachine.nodesNumber, interfaceType = currentMachine.interfaceType, portName = currentMachine.portName, persistence="debug.vmp")
+
         print "---------------------------------------------------------------------------------------------------------------"
         print "Please identify each Gestalt node by pressing on their buttons when asked here:"
         print
         initialize = InitThread()
+
+
+
         event.Skip()
 
 
@@ -142,7 +154,7 @@ class wxTabTest(wxTabTest.MyPanel1):
         #currentMachine.machineNodes.setVelocityRequest(8)
         # Some random moves to test with
         if number == 0:
-            moves = [0,10,20,30]
+            moves = [[10],[20],[10],[0]]
         elif number == 1:
             moves = [[10,10],[20,20],[10,10],[0,0]]
         elif number == 2:
@@ -151,17 +163,18 @@ class wxTabTest(wxTabTest.MyPanel1):
             moves = [[10,10],[20,20],[10,10],[0,0]]
 
         # Setup
-        currentMachine.initCoordinates()
-        currentMachine.initKinematics()
-        currentMachine.initFunctions()
+        self.GetParent().GetParent().m_statusBar1.SetStatusText("Identifying the nodes...", 0)
+
+
         #Test move
         for move in moves:
-            currentMachine.move(move, 0)
-            status = currentMachine.machineNodes.spinStatusRequest()
+            #currentMachine.move(move, 0)
+            #status = currentMachine.machineNodes.spinStatusRequest()
             # This checks to see if the move is done.
-            while status['stepsRemaining'] > 0:
-                time.sleep(0.001)
-                status = currentMachine.machineNodes.spinStatusRequest()
+            #while status['stepsRemaining'] > 0:
+            #    time.sleep(0.001)
+            #    status = currentMachine.machineNodes.spinStatusRequest()
+            pass
 
 
 # The class for the CAM tab

@@ -45,7 +45,22 @@ class wxMachineNodes():
         self.rotary = False
         self.axisNumber = int(axisNumber)
         self.axisName = "Node #"+str(axisNumber+1)
-        self.Node = nodes.networkedGestaltNode(name = self.axisName, interface = interface, persistenceFile = persistence)
+        self.Node = nodes.networkedGestaltNode(name = self.axisName, interface = interface, persistenceFile = persistence, filename = "gestalt/examples/machines/htmaa/086-005a.py")
+
+
+# Basic machines made of n gestalt nodes for the GUI
+class wxMachineGUI():
+
+    def __init__(self, nodesNumber = 0):
+        self.nodesGUI = {}
+        self.nodesNumber = nodesNumber
+        self.initNodesGUI(self.nodesNumber)
+
+    def initNodesGUI(self, number):
+        for each_node in range(number):
+            self.nodesGUI[each_node] = {}
+            self.nodesGUI[each_node]["linear"] = True
+            self.nodesGUI[each_node]["rotary"] = False
 
 
 # Basic machines made of n gestalt nodes
@@ -67,7 +82,9 @@ class wxMachine(machines.virtualMachine):
     def initMachine(self):
         self.initInterfaces()
         self.initControllers()
-        #self.initFunctions()
+        self.initCoordinates()
+        self.initKinematics()
+        self.initFunctions()
 
 
     def initInterfaces(self):
@@ -78,16 +95,15 @@ class wxMachine(machines.virtualMachine):
 
 
     def initControllers(self):
-        self.initInterfaces()
+        #self.initInterfaces()
         for each_node in range(self.nodesNumber):
-            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence )
-        self.machineNodes = nodes.compoundNode(**self.machineAxesNodes)
+            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
+        self.machineNodes = nodes.compoundNode(str(**self.machineAxesNodes))
 
     def initCoordinates(self):
         measure_units = []
         for each_node in range(self.nodesNumber):
             measure_units.append('mm')
-        print measure_units
         self.position = state.coordinate(measure_units)
 
     def initKinematics(self):
