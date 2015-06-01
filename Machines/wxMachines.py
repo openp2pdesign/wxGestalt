@@ -41,7 +41,6 @@ interfacesList = ['ftdi','lufa','genericSerial']
 class wxMachineNodes():
 
     def __init__(self, axisNumber = 0, interface = None, persistenceFile = "wxGestalt.vmp",*args, **kw):
-        #super(nodes.networkedGestaltNode, self).__init__(*args, **kw)
         self.linear = True
         self.rotary = False
         self.axisNumber = int(axisNumber)
@@ -70,7 +69,6 @@ class wxMachineGUI():
 class wxMachine(machines.virtualMachine):
 
     def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistenceFile = "wxGestalt.vmp", *args, **kw):
-        #super(machines.virtualMachine, self).__init__(*args, **kw)
         self.persistenceFile = persistenceFile
         self.baudRate = baudRate
         self.providedInterface = interface

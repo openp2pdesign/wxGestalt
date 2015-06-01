@@ -64,15 +64,18 @@ class InitThread(wxSubThread.SimpleThread):
         print "Testing the nodes..."
         moves = [[10],[20],[10],[0]]
 
-        #currentMachine.machineNodes.setVelocityRequest(8)
+        currentMachine.machineNodes.setVelocityRequest(8)
 
         # #Test move
         for coords in moves:
             currentMachine.move(coords, 0)
             status = currentMachine.machineNodes.spinStatusRequest()
-            while status['stepsRemaining'] > 0:
-                 time.sleep(0.001)
-                 status = currentMachine.machineNodes.spinStatusRequest()
+            while status[0]['stepsRemaining'] > 0:
+                  sleep(0.001)
+                  status = currentMachine.machineNodes.spinStatusRequest()
+
+        print
+        print "Nodes tested successfully."
 
 
 # The class for the Setup tab
@@ -174,27 +177,6 @@ class wxTabTest(wxTabTest.MyPanel1):
         global currentMachine
         message = "Testing..."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-        currentMachine.machineNodes.setVelocityRequest(8)
-        # Some random moves to test with
-        print currentMachine.nodesNumber
-        number = currentMachine.nodesNumber
-        if number == 0:
-            moves = [[10],[20],[10],[0]]
-        elif number == 1:
-            moves = [[10,10],[20,20],[10,10],[0,0]]
-        elif number == 2:
-            moves = [[10,10,10],[20,20,10],[10,10,10],[0,0]]
-        elif number == 3:
-            moves = [[10,10],[20,20],[10,10],[0,0]]
-
-        # #Test move
-
-        for coords in moves:
-            stage.move(coords, 0)
-            status = stage.machineNodes.spinStatusRequest()
-            while status['stepsRemaining'] > 0:
-                 time.sleep(0.001)
-                 status = stage.machineNodes.spinStatusRequest()
 
 
 # The class for the CAM tab
