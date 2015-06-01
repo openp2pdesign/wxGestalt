@@ -11,6 +11,10 @@ Developed with ver. 2.7.9
 Install with:
 `pip install PySerial`
 
+### Unidecode
+Install with:
+`pip install unidecode`
+
 ### wxPython
 [Installation guide](http://wiki.wxpython.org/How%20to%20install%20wxPython)
 
