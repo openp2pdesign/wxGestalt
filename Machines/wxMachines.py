@@ -45,6 +45,8 @@ class wxMachineNodes():
         self.rotary = False
         self.axisNumber = int(axisNumber)
         self.axisName = "Node #"+str(axisNumber+1)
+        self.name = self.axisName
+        self.interface = interface
         self.Node = nodes.networkedGestaltNode(name = self.axisName, interface = interface, persistenceFile = persistence, filename = "gestalt/examples/machines/htmaa/086-005a.py")
 
 
@@ -93,12 +95,12 @@ class wxMachine(machines.virtualMachine):
         else:
             self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = self.baudRate, interfaceType = self.interfaceType, portName = self.portName))
 
-
     def initControllers(self):
-        #self.initInterfaces()
         for each_node in range(self.nodesNumber):
             self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
-        self.machineNodes = nodes.compoundNode(str(**self.machineAxesNodes))
+        #self.machineNodes = nodes.compoundNode(**self.machineAxesNodes)
+        self.machineNodes = nodes.compoundNode(*self.machineAxesNodes.values())
+
 
     def initCoordinates(self):
         measure_units = []
