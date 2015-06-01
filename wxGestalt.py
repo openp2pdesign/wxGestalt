@@ -75,6 +75,7 @@ class wxTabSetup(wxTabSetup.MyPanel1):
 
         # Update the virtual class for the machine in the GUI
         GUImachine.initNodesGUI(GUImachine.nodesNumber)
+        currentMachine.nodesNumber = GUImachine.nodesNumber
 
 
 # The class for the Node tab
@@ -103,16 +104,13 @@ class wxTabIdentify(wxTabIdentify.MyPanel1):
     def On_InitializeMachine( self, event ):
         global currentMachine
         global GUImachine
-
+        message = "Initializing the nodes..."
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         currentMachine = wxMachines.wxMachine(nodesNumber = GUImachine.nodesNumber, interfaceType = currentMachine.interfaceType, portName = currentMachine.portName, persistence="debug.vmp")
-
         print "---------------------------------------------------------------------------------------------------------------"
         print "Please identify each Gestalt node by pressing on their buttons when asked here:"
         print
         initialize = InitThread()
-
-
-
         event.Skip()
 
 
@@ -121,8 +119,6 @@ class wxTabTest(wxTabTest.MyPanel1):
 
     def InitUI(self):
         global currentMachine
-        self.GetParent().GetParent().m_statusBar1.SetStatusText(str(currentMachine.nodesNumber), 0)
-        #self.GetParent().GetParent().On_Message("titolo", str(currentMachine.nodesNumber))
         # Clean previous interface
         for k in range(len(self.control)):
             self.controlSizer.Hide(self.control[k])
@@ -147,12 +143,15 @@ class wxTabTest(wxTabTest.MyPanel1):
             self.controlSizer.Add( self.control[g], 0, wx.ALL, 5 )
             self.button[g] = wx.Button( self, wx.ID_ANY, u"Test this node", (300, 50+100*g-5), wx.DefaultSize, 0 )
             self.controlSizer.Add( self.button[g], 0, wx.ALL, 5 )
-            self.button[g].Bind( wx.EVT_BUTTON, self.On_TestNode(g) )
+            self.button[g].Bind( wx.EVT_BUTTON, self.On_TestNode )
 
-    def On_TestNode(event,number):
+    def On_TestNode(self, event):
         global currentMachine
+        message = "Testing..."
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         #currentMachine.machineNodes.setVelocityRequest(8)
         # Some random moves to test with
+        number = currentMachine.nodesNumber
         if number == 0:
             moves = [[10],[20],[10],[0]]
         elif number == 1:
@@ -162,19 +161,15 @@ class wxTabTest(wxTabTest.MyPanel1):
         elif number == 3:
             moves = [[10,10],[20,20],[10,10],[0,0]]
 
-        # Setup
-        self.GetParent().GetParent().m_statusBar1.SetStatusText("Identifying the nodes...", 0)
-
-
-        #Test move
-        for move in moves:
-            #currentMachine.move(move, 0)
-            #status = currentMachine.machineNodes.spinStatusRequest()
-            # This checks to see if the move is done.
-            #while status['stepsRemaining'] > 0:
-            #    time.sleep(0.001)
-            #    status = currentMachine.machineNodes.spinStatusRequest()
-            pass
+        # #Test move
+        # for move in moves:
+        #     currentMachine.move(move, 0)
+        #     status = currentMachine.machineNodes.spinStatusRequest()
+        #     # This checks to see if the move is done.
+        #     while status['stepsRemaining'] > 0:
+        #         time.sleep(0.001)
+        #         status = currentMachine.machineNodes.spinStatusRequest()
+        #     #pass
 
 
 # The class for the CAM tab
