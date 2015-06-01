@@ -14,6 +14,7 @@ import Functions.wxFunctions as wxFunctions
 import Functions.wxSubThread as wxSubThread
 # Module for log
 import sys
+import os
 # Module for Gestalt Machines
 import Machines.wxMachines as wxMachines
 # sleep
@@ -210,6 +211,13 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
         message = "Launch tab created"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+        file_to_save = self.m_textCtrl1.GetValue()
+        temp_path = os.getcwd() + "/temp_temp.py"
+        print temp_path
+        fo_temp = open(temp_path, "w+")
+        fo_temp.write(file_to_save.encode('utf8'));
+        fo_temp.close()
+
         event.Skip()
 
 
