@@ -49,6 +49,32 @@ class InitThread(wxSubThread.SimpleThread):
         global currentMachine
         currentMachine.initMachine()
 
+        # Test node
+        number = currentMachine.nodesNumber
+        if number == 0:
+            moves = [[10],[20],[10],[0]]
+        elif number == 1:
+            moves = [[10,10],[20,20],[10,10],[0,0]]
+        elif number == 2:
+            moves = [[10,10,10],[20,20,10],[10,10,10],[0,0]]
+        elif number == 3:
+            moves = [[10,10],[20,20],[10,10],[0,0]]
+
+        print
+        print "Testing the nodes..."
+        moves = [[10],[20],[10],[0]]
+
+        #currentMachine.machineNodes.setVelocityRequest(8)
+
+        # #Test move
+        for move in moves:
+             currentMachine.move(move, 0)
+             status = currentMachine.machineNodes[0].spinStatusRequest()
+             # This checks to see if the move is done.
+             while status['stepsRemaining'] > 0:
+                 time.sleep(0.001)
+                 status = currentMachine.machineNodes[0].spinStatusRequest()
+
 
 # The class for the Setup tab
 class wxTabSetup(wxTabSetup.MyPanel1):
@@ -151,6 +177,7 @@ class wxTabTest(wxTabTest.MyPanel1):
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         #currentMachine.machineNodes.setVelocityRequest(8)
         # Some random moves to test with
+        print currentMachine.nodesNumber
         number = currentMachine.nodesNumber
         if number == 0:
             moves = [[10],[20],[10],[0]]
@@ -162,13 +189,13 @@ class wxTabTest(wxTabTest.MyPanel1):
             moves = [[10,10],[20,20],[10,10],[0,0]]
 
         # #Test move
-        # for move in moves:
-        #     currentMachine.move(move, 0)
-        #     status = currentMachine.machineNodes.spinStatusRequest()
-        #     # This checks to see if the move is done.
-        #     while status['stepsRemaining'] > 0:
-        #         time.sleep(0.001)
-        #         status = currentMachine.machineNodes.spinStatusRequest()
+        for move in moves:
+             currentMachine.move(move, 0)
+             status = currentMachine.machineNodes.spinStatusRequest()
+             # This checks to see if the move is done.
+             while status['stepsRemaining'] > 0:
+                 time.sleep(0.001)
+                 status = currentMachine.machineNodes.spinStatusRequest()
         #     #pass
 
 

@@ -80,14 +80,12 @@ class wxMachine(machines.virtualMachine):
         self.machineAxesNodes = {}
         self.providedInterface = interface
 
-
     def initMachine(self):
         self.initInterfaces()
         self.initControllers()
         self.initCoordinates()
         self.initKinematics()
         self.initFunctions()
-
 
     def initInterfaces(self):
         if self.providedInterface:
@@ -99,9 +97,7 @@ class wxMachine(machines.virtualMachine):
         for each_node in range(self.nodesNumber):
             self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
         toCompound = (node.interface for node in self.machineAxesNodes.values())
-        #self.machineNodes = nodes.compoundNode(**self.machineAxesNodes)
         self.machineNodes = nodes.compoundNode(*toCompound)
-
 
     def initCoordinates(self):
         measure_units = []
