@@ -119,11 +119,15 @@ class wxNodeTabSetup(wxNodeTab.MyPanel1):
             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
             GUImachine.nodesGUI[currentNode]["linear"] = True
             GUImachine.nodesGUI[currentNode]["rotary"] = False
+            currentMachine.linear = True
+            currentMachine.rotary = False
         else:
             message = "Node #" + str(currentNode+1) + " is rotary."
             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-            GUImachine.nodesGUI[currentNode]["linear"] = True
-            GUImachine.nodesGUI[currentNode]["rotary"] = False
+            GUImachine.nodesGUI[currentNode]["linear"] = False
+            GUImachine.nodesGUI[currentNode]["rotary"] = True
+            currentMachine.linear = False
+            currentMachine.rotary = True
 
 
 # The class for the Identify tab
@@ -175,7 +179,7 @@ class wxTabTest(wxTabTest.MyPanel1):
 
     def On_TestNode(self, event):
         global currentMachine
-        message = "Testing..."
+        message = "Testing... Not working at the moment"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
 
 
