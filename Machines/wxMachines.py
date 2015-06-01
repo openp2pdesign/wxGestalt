@@ -20,7 +20,7 @@ from gestalt.machines import elements
 from gestalt.machines import kinematics
 from gestalt.machines import state
 from gestalt.utilities import notice
-from gestalt.publish import rpc	#remote procedure call dispatcher
+from gestalt.publish import rpc    #remote procedure call dispatcher
 
 
 # Variables
@@ -40,7 +40,8 @@ interfacesList = ['ftdi','lufa','genericSerial']
 # A class for each Node / Axis
 class wxMachineNodes():
 
-    def __init__(self, axisNumber = 0, interface = None, persistence = "wxGestalt.vmp"):
+    def __init__(self, axisNumber = 0, interface = None, persistence = "wxGestalt.vmp",*args, **kw):
+        #super(nodes.networkedGestaltNode, self).__init__(*args, **kw)
         self.linear = True
         self.rotary = False
         self.axisNumber = int(axisNumber)
@@ -68,7 +69,8 @@ class wxMachineGUI():
 # Basic machines made of n gestalt nodes
 class wxMachine(machines.virtualMachine):
 
-    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistence = "wxGestalt.vmp"):
+    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistence = "wxGestalt.vmp", *args, **kw):
+        super(machines.virtualMachine, self).__init__(*args, **kw)
         self.persistence = persistence
         self.baudRate = baudRate
         self.providedInterface = interface
@@ -79,24 +81,35 @@ class wxMachine(machines.virtualMachine):
         self.machineAxes = {}
         self.machineAxesNodes = {}
         self.providedInterface = interface
+        self.publishEnabled = True
 
     def initMachine(self):
+        # self.initInterfaces()
+        # self.initControllers()
+        # self.initCoordinates()
+        # self.initKinematics()
+        # self.initFunctions()
+
         self.initInterfaces()
         self.initControllers()
         self.initCoordinates()
         self.initKinematics()
         self.initFunctions()
+        self.initPublish()
+        self.initLast()
+        self.publish()
 
     def initInterfaces(self):
         if self.providedInterface:
-            self.fabnet = self.providedInterface		#providedInterface is defined in the virtualMachine class.
+            self.fabnet = self.providedInterface        #providedInterface is defined in the virtualMachine class.
         else:
             self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = self.baudRate, interfaceType = self.interfaceType, portName = self.portName))
 
     def initControllers(self):
         for each_node in range(self.nodesNumber):
-            self.machineAxesNodes[each_node] = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
-        toCompound = (node.interface for node in self.machineAxesNodes.values())
+            temp = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
+            self.machineAxesNodes[each_node] = temp.Node
+        toCompound = (node for node in self.machineAxesNodes.values())
         self.machineNodes = nodes.compoundNode(*toCompound)
 
     def initCoordinates(self):
@@ -108,15 +121,15 @@ class wxMachine(machines.virtualMachine):
     def initKinematics(self):
         for each_node in range(self.nodesNumber):
             self.machineAxes[each_node] = elements.elementChain.forward([elements.microstep.forward(4), elements.stepper.forward(1.8), elements.leadscrew.forward(6.096), elements.invert.forward(True)])
-        self.stageKinematics = kinematics.direct(self.nodesNumber)	#direct drive on all axes
+        self.stageKinematics = kinematics.direct(self.nodesNumber)    #direct drive on all axes
 
     def initFunctions(self):
         self.move = functions.move(virtualMachine = self, virtualNode = self.machineNodes, axes = [self.machineAxes.values()], kinematics = self.stageKinematics, machinePosition = self.position,planner = 'null')
-        self.jog = functions.jog(self.move)	#an incremental wrapper for the move function
+        self.jog = functions.jog(self.move)    #an incremental wrapper for the move function
 
     def initLast(self):
         #self.machineControl.setMotorCurrents(aCurrent = 0.8, bCurrent = 0.8, cCurrent = 0.8)
-        #self.xyzNode.setVelocityRequest(0)	#clear velocity on nodes. Eventually this will be put in the motion planner on initialization to match state.
+        #self.xyzNode.setVelocityRequest(0)    #clear velocity on nodes. Eventually this will be put in the motion planner on initialization to match state.
         pass
 
     def publish(self):
