@@ -24,7 +24,7 @@ from gestalt import utilities
 
 # Variables
 # The current machine edited in the app
-currentMachine = wxMachines.wxMachine(persistence="debug.vmp")
+currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
 GUImachine = wxMachines.wxMachineGUI()
 terminal = sys.stdout
 
@@ -67,13 +67,12 @@ class InitThread(wxSubThread.SimpleThread):
         #currentMachine.machineNodes.setVelocityRequest(8)
 
         # #Test move
-        for move in moves:
-             currentMachine.move(move, 0)
-             status = currentMachine.machineNodes[0].spinStatusRequest()
-             # This checks to see if the move is done.
-             while status['stepsRemaining'] > 0:
+        for coords in moves:
+            currentMachine.move(coords, 0)
+            status = currentMachine.machineNodes.spinStatusRequest()
+            while status['stepsRemaining'] > 0:
                  time.sleep(0.001)
-                 status = currentMachine.machineNodes[0].spinStatusRequest()
+                 status = currentMachine.machineNodes.spinStatusRequest()
 
 
 # The class for the Setup tab
@@ -175,7 +174,7 @@ class wxTabTest(wxTabTest.MyPanel1):
         global currentMachine
         message = "Testing..."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-        #currentMachine.machineNodes.setVelocityRequest(8)
+        currentMachine.machineNodes.setVelocityRequest(8)
         # Some random moves to test with
         print currentMachine.nodesNumber
         number = currentMachine.nodesNumber
@@ -189,14 +188,13 @@ class wxTabTest(wxTabTest.MyPanel1):
             moves = [[10,10],[20,20],[10,10],[0,0]]
 
         # #Test move
-        for move in moves:
-             currentMachine.move(move, 0)
-             status = currentMachine.machineNodes.spinStatusRequest()
-             # This checks to see if the move is done.
-             while status['stepsRemaining'] > 0:
+
+        for coords in moves:
+            stage.move(coords, 0)
+            status = stage.machineNodes.spinStatusRequest()
+            while status['stepsRemaining'] > 0:
                  time.sleep(0.001)
-                 status = currentMachine.machineNodes.spinStatusRequest()
-        #     #pass
+                 status = stage.machineNodes.spinStatusRequest()
 
 
 # The class for the CAM tab

@@ -40,7 +40,7 @@ interfacesList = ['ftdi','lufa','genericSerial']
 # A class for each Node / Axis
 class wxMachineNodes():
 
-    def __init__(self, axisNumber = 0, interface = None, persistence = "wxGestalt.vmp",*args, **kw):
+    def __init__(self, axisNumber = 0, interface = None, persistenceFile = "wxGestalt.vmp",*args, **kw):
         #super(nodes.networkedGestaltNode, self).__init__(*args, **kw)
         self.linear = True
         self.rotary = False
@@ -48,7 +48,7 @@ class wxMachineNodes():
         self.axisName = "Node #"+str(axisNumber+1)
         self.name = self.axisName
         self.interface = interface
-        self.Node = nodes.networkedGestaltNode(name = self.axisName, interface = self.interface, persistenceFile = persistence, filename = "gestalt/examples/machines/htmaa/086-005a.py")
+        self.Node = nodes.networkedGestaltNode(name = self.axisName, interface = self.interface, persistenceFile = persistenceFile, filename = "gestalt/examples/machines/htmaa/086-005a.py")
 
 
 # Basic machines made of n gestalt nodes for the GUI
@@ -69,9 +69,9 @@ class wxMachineGUI():
 # Basic machines made of n gestalt nodes
 class wxMachine(machines.virtualMachine):
 
-    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistence = "wxGestalt.vmp", *args, **kw):
-        super(machines.virtualMachine, self).__init__(*args, **kw)
-        self.persistence = persistence
+    def __init__(self, baudRate = baudratesList[16], interface = None, interfaceType = "ftdi", portName = "", nodesNumber = 0, persistenceFile = "wxGestalt.vmp", *args, **kw):
+        #super(machines.virtualMachine, self).__init__(*args, **kw)
+        self.persistenceFile = persistenceFile
         self.baudRate = baudRate
         self.providedInterface = interface
         self.interfaceType = interfaceType
@@ -107,7 +107,7 @@ class wxMachine(machines.virtualMachine):
 
     def initControllers(self):
         for each_node in range(self.nodesNumber):
-            temp = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistence = self.persistence)
+            temp = wxMachineNodes(axisNumber = each_node, interface = self.fabnet, persistenceFile = self.persistenceFile)
             self.machineAxesNodes[each_node] = temp.Node
         toCompound = (node for node in self.machineAxesNodes.values())
         self.machineNodes = nodes.compoundNode(*toCompound)
@@ -124,7 +124,7 @@ class wxMachine(machines.virtualMachine):
         self.stageKinematics = kinematics.direct(self.nodesNumber)    #direct drive on all axes
 
     def initFunctions(self):
-        self.move = functions.move(virtualMachine = self, virtualNode = self.machineNodes, axes = [self.machineAxes.values()], kinematics = self.stageKinematics, machinePosition = self.position,planner = 'null')
+        self.move = functions.move(virtualMachine = self, virtualNode = self.machineNodes, axes = self.machineAxes.values(), kinematics = self.stageKinematics, machinePosition = self.position,planner = 'null')
         self.jog = functions.jog(self.move)    #an incremental wrapper for the move function
 
     def initLast(self):
