@@ -51,18 +51,18 @@ class InitThread(wxSubThread.SimpleThread):
 
         # Test node
         number = currentMachine.nodesNumber
-        if number == 0:
+        print "Number of nodes:",number
+        if number == 1:
             moves = [[10],[20],[10],[0]]
-        elif number == 1:
-            moves = [[10,10],[20,20],[10,10],[0,0]]
         elif number == 2:
-            moves = [[10,10,10],[20,20,10],[10,10,10],[0,0]]
-        elif number == 3:
             moves = [[10,10],[20,20],[10,10],[0,0]]
+        elif number == 3:
+            moves = [[10,10,10],[20,20,20],[10,10,10],[0,0,0]]
+        elif number == 4:
+            moves = [[10,10,10,10],[20,20,20,20],[10,10,10,10],[0,0,0,0]]
 
         print
         print "Testing the nodes..."
-        moves = [[10],[20],[10],[0]]
 
         currentMachine.machineNodes.setVelocityRequest(8)
 
