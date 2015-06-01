@@ -27,6 +27,7 @@ from gestalt import utilities
 currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
 GUImachine = wxMachines.wxMachineGUI()
 terminal = sys.stdout
+path_file_opened = ""
 
 
 # Classes
@@ -187,17 +188,28 @@ class wxTabTest(wxTabTest.MyPanel1):
 class wxTabCAM(wxTabCAM.MyPanel1):
 
     def On_LoadFile( self, event ):
-        self.m_textCtrl1.LoadFile(event.GetPath())
+        global path_file_opened
+        path_file_opened = event.GetPath()
+        self.m_textCtrl1.LoadFile(path_file_opened)
+        message = "File loaded:"
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
 
     def On_SaveCAM( self, event ):
-        self.GetParent().GetParent().On_Message("titolo","contenuto")
-        print "SAve"
+        global path_file_opened
+        file_to_save = self.m_textCtrl1.GetValue()
+        fo = open(path_file_opened, "w+")
+        fo.write(file_to_save.encode('utf8'));
+        fo.close()
+        message = "File saved"
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
 
     def On_LaunchCAM( self, event ):
         self.GetParent().GetParent().tab_go = wxTabCAM(self.GetParent().GetParent().m_notebook1)
         self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
+        message = "Launch tab created"
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
 
 
@@ -268,8 +280,6 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         currentMainTab = event.GetSelection()
         if currentMainTab == 2 and currentMachine.nodesNumber != 0:
             self.tab_test.InitUI()
-
-        #    self.tab_identify.UpdateUI()
         event.Skip()
 
     def On_Message(self, title, content):
