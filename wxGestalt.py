@@ -14,7 +14,9 @@ import Functions.wxFunctions as wxFunctions
 import Functions.wxSubThread as wxSubThread
 # Module for log
 import sys
+# Modules for temp file
 import os
+import codecs
 # Module for Gestalt Machines
 import Machines.wxMachines as wxMachines
 # sleep
@@ -207,16 +209,20 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         event.Skip()
 
     def On_LaunchCAM( self, event ):
-        self.GetParent().GetParent().tab_go = wxTabCAM(self.GetParent().GetParent().m_notebook1)
-        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
-        message = "Launch tab created"
-        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+        # Save a temporary file
         file_to_save = self.m_textCtrl1.GetValue()
         temp_path = os.getcwd() + "/temp_temp.py"
         print temp_path
-        fo_temp = open(temp_path, "w+")
-        fo_temp.write(file_to_save.encode('utf8'));
+        fo_temp = codecs.open(temp_path, "w+",'utf-8')
+        fo_temp.write(file_to_save);
         fo_temp.close()
+
+        # Create the tab
+        import temp_temp
+        self.GetParent().GetParent().tab_go = temp_temp.MyPanel1(self.GetParent().GetParent().m_notebook1)
+        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
+        message = "Launch tab created"
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
 
         event.Skip()
 
