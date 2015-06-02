@@ -3,12 +3,14 @@
 # Modules
 # Modules for the wx GUI
 import wx
+import wx.stc as stc
 import GUI.wxMainApp as wxMainApp
 import GUI.wxTabSetup as wxTabSetup
 import GUI.wxNodeTab as wxNodeTab
 import GUI.wxTabIdentify as wxTabIdentify
 import GUI.wxTabTest as wxTabTest
 import GUI.wxTabCAM as wxTabCAM
+import GUI.wxCodeEditor as wxCodeEditor
 # Various functions
 import Functions.wxFunctions as wxFunctions
 import Functions.wxSubThread as wxSubThread
@@ -191,17 +193,30 @@ class wxTabTest(wxTabTest.MyPanel1):
 # The class for the CAM tab
 class wxTabCAM(wxTabCAM.MyPanel1):
 
+    def __init__(self, *args, **kw):
+        super(wxTabCAM, self).__init__(*args, **kw)
+        # Get rid of the TextCtrl added in the wxFormBuilder file
+        self.bSizer2.Hide(self.m_textCtrl1)
+        self.bSizer2.Remove(self.m_textCtrl1)
+        # Add a styled text editor
+        self.editor = wxCodeEditor.codeEditor(self, -1)
+        self.bSizer2.Add(self.editor, 1, wx.EXPAND)
+        self.editor.EmptyUndoBuffer()
+        self.editor.Colourise(0, -1)
+        self.editor.SetMarginType(1, stc.STC_MARGIN_NUMBER)
+        self.editor.SetMarginWidth(1, 25)
+
     def On_LoadFile( self, event ):
         global path_file_opened
         path_file_opened = event.GetPath()
-        self.m_textCtrl1.LoadFile(path_file_opened)
+        self.editor.SetText(open(path_file_opened).read())
         message = "File loaded:"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
 
     def On_SaveCAM( self, event ):
         global path_file_opened
-        file_to_save = self.m_textCtrl1.GetValue()
+        file_to_save = self.editor.GetValue()
         fo = open(path_file_opened, "w+")
         fo.write(file_to_save.encode('utf8'));
         fo.close()
@@ -216,14 +231,12 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         fo_temp = codecs.open(temp_path, "w+",'utf-8')
         fo_temp.write(unidecode(file_to_save));
         fo_temp.close()
-
         # Create the tab
         import temp_temp
         self.GetParent().GetParent().tab_go = temp_temp.MyPanel1(self.GetParent().GetParent().m_notebook1)
         self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
         message = "Launch tab created"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-
         event.Skip()
 
 
