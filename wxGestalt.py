@@ -226,7 +226,7 @@ class wxTabCAM(wxTabCAM.MyPanel1):
 
     def On_LaunchCAM( self, event ):
         # Save a temporary file
-        file_to_save = self.m_textCtrl1.GetValue()
+        file_to_save = self.editor.GetValue()
         temp_path = os.getcwd() + "/temp_temp.py"
         fo_temp = codecs.open(temp_path, "w+",'utf-8')
         fo_temp.write(unidecode(file_to_save));
