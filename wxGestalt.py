@@ -205,6 +205,8 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         self.editor.Colourise(0, -1)
         self.editor.SetMarginType(1, stc.STC_MARGIN_NUMBER)
         self.editor.SetMarginWidth(1, 25)
+        # Load basic template.py file at startup
+        self.editor.SetText(open(os.getcwd() + "/CAM/template.py").read())
 
     def On_LoadFile( self, event ):
         global path_file_opened
