@@ -33,7 +33,7 @@ else:
 # A class for a code editor with style
 class codeEditor(stc.StyledTextCtrl):
 
-    def __init__(self, parent, ID, pos=wx.DefaultPosition, size=wx.Size( 880,600 ),style=0):
+    def __init__(self, parent, ID, pos=wx.DefaultPosition, size=wx.Size( 880,530 ),style=0):
         stc.StyledTextCtrl.__init__(self, parent, ID, pos, size, style)
 
         # Zoom keys
