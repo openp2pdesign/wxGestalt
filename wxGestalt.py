@@ -235,7 +235,7 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         fo_temp.close()
         # Create the tab
         import temp_temp
-        self.GetParent().GetParent().tab_go = temp_temp.MyPanel1(self.GetParent().GetParent().m_notebook1)
+        self.GetParent().GetParent().tab_go = temp_temp.wxGestaltPanel(self.GetParent().GetParent().m_notebook1)
         self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
         message = "Launch tab created"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
