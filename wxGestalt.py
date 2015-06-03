@@ -295,13 +295,26 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         event.Skip()
 
     def On_OpenMachine( self, event ):
-        event.Skip()
+        # Variables
+        global currentMachine
+        self.dirname = path_file_opened
+        self.filename = ""
+        # Open file dialog
+        dlg = wx.FileDialog(self, "Open a file", path_file_opened, "", "*.json", wx.OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            self.filename = dlg.GetFilename()
+            self.dirname = dlg.GetDirectory()
+            # Read data into the currentMachine object
+            file_to_open = open(os.path.join(self.dirname, self.filename))
+            json_str = file_to_open.read()
+            currentMachine = jsonpickle.decode(json_str)
+            dlg.Destroy()
+            # Update the GUI
 
     def On_SaveMachine( self, event ):
         # Get the current machine as a JSON text
         global currentMachine
         data_to_save = jsonpickle.encode(currentMachine)
-
         # Create save as dialog
         dlg = wx.FileDialog(self, "Save project as...", os.getcwd(), "", "*.json", \
                     wx.SAVE|wx.OVERWRITE_PROMPT)
