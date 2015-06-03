@@ -236,7 +236,7 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         # Create the tab
         import temp_temp
         self.GetParent().GetParent().tab_go = temp_temp.wxGestaltPanel(self.GetParent().GetParent().m_notebook1)
-        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "5. Run the machine")
+        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "4. Run the machine")
         message = "Launch tab created"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
@@ -276,12 +276,12 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes")
 
         # Add Test Tab
-        self.tab_test = wxTabTest(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
+        #self.tab_test = wxTabTest(self.m_notebook1)
+        #self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
 
         # Add CAM Tab
         self.tab_cam = wxTabCAM(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_cam, "4. CAM")
+        self.m_notebook1.AddPage(self.tab_cam, "3. CAM")
 
 
     def On_Quit( self, event ):
