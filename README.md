@@ -15,6 +15,10 @@ Install with:
 Install with:
 `pip install unidecode`
 
+### jsonpickle
+Install with:
+`pip install jsonpickle`
+
 ### wxPython
 [Installation guide](http://wiki.wxpython.org/How%20to%20install%20wxPython)
 

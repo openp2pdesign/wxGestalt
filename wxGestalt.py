@@ -20,6 +20,9 @@ import sys
 import os
 import codecs
 from unidecode import unidecode
+# Module for saving the wxMachine class as a JSON file
+import json
+import jsonpickle
 # Module for Gestalt Machines
 import Machines.wxMachines as wxMachines
 # sleep
@@ -54,35 +57,10 @@ class InitThread(wxSubThread.SimpleThread):
 
     def run(self):
         global currentMachine
+        # Initialize the machine
         currentMachine.initMachine()
-
-        # Test node
-        number = currentMachine.nodesNumber
-        print "Number of nodes:",number
-        if number == 1:
-            moves = [[10],[20],[10],[0]]
-        elif number == 2:
-            moves = [[10,10],[20,20],[10,10],[0,0]]
-        elif number == 3:
-            moves = [[10,10,10],[20,20,20],[10,10,10],[0,0,0]]
-        elif number == 4:
-            moves = [[10,10,10,10],[20,20,20,20],[10,10,10,10],[0,0,0,0]]
-
-        print
-        print "Testing the nodes..."
-
-        currentMachine.machineNodes.setVelocityRequest(8)
-
-        # #Test move
-        for coords in moves:
-            currentMachine.move(coords, 0)
-            status = currentMachine.machineNodes.spinStatusRequest()
-            while status[0]['stepsRemaining'] > 0:
-                  sleep(0.001)
-                  status = currentMachine.machineNodes.spinStatusRequest()
-
-        print
-        print "Nodes tested successfully."
+        # Test the machine
+        currentMachine.testMachine()
 
 
 # The class for the Setup tab
@@ -248,6 +226,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
     def __init__(self, *args, **kw):
         super(wxGestaltApp, self).__init__(*args, **kw)
         global currentMachine
+        self.myMachine = currentMachine
 
         self.InitUI()
 
@@ -307,8 +286,39 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
     def On_SelectNotebookPage( self, event):
         currentMainTab = event.GetSelection()
-        if currentMainTab == 2 and currentMachine.nodesNumber != 0:
-            self.tab_test.InitUI()
+        # Uncomment this when uncommenting the Test tab
+        #if currentMainTab == 2 and currentMachine.nodesNumber != 0:
+        #    self.tab_test.InitUI()
+        event.Skip()
+
+    def On_NewMachine( self, event ):
+        event.Skip()
+
+    def On_OpenMachine( self, event ):
+        event.Skip()
+
+    def On_SaveMachine( self, event ):
+        # Get the current machine as a JSON text
+        global currentMachine
+        data_to_save = jsonpickle.encode(currentMachine)
+
+        # Create save as dialog
+        dlg = wx.FileDialog(self, "Save project as...", os.getcwd(), "", "*.json", \
+                    wx.SAVE|wx.OVERWRITE_PROMPT)
+        result = dlg.ShowModal()
+        inFile = dlg.GetPath()
+        dlg.Destroy()
+        # Save the file... or not
+        if result == wx.ID_OK:
+            with open(inFile, 'w') as outfile:
+                json.dump(data_to_save, outfile)
+                message = "File saved as " + inFile
+                self.m_statusBar1.SetStatusText(message, 0)
+            return True
+        elif result == wx.ID_CANCEL:
+            return False
+
+    def On_About( self, event ):
         event.Skip()
 
     def On_Message(self, title, content):

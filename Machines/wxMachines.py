@@ -5,6 +5,8 @@
 # Import for changing the Python Path for importing Gestalt
 import sys
 import os
+# Import sleep
+from time import sleep
 
 # Change the Python Path if needed
 base_dir = os.path.dirname(__file__) or '.'
@@ -143,6 +145,39 @@ class wxMachine(machines.virtualMachine):
     def setSpindleSpeed(self, speedFraction):
         #self.machineControl.pwmRequest(speedFraction)
         pass
+
+    def testMachine(self):
+        # Test node
+        number = self.nodesNumber
+        print "Number of nodes:",number
+        if number == 1:
+            moves = [[10],[20],[10],[0]]
+        elif number == 2:
+            moves = [[10,10],[20,20],[10,10],[0,0]]
+        elif number == 3:
+            moves = [[10,10,10],[20,20,20],[10,10,10],[0,0,0]]
+        elif number == 4:
+            moves = [[10,10,10,10],[20,20,20,20],[10,10,10,10],[0,0,0,0]]
+
+        print
+        print "Testing the nodes..."
+        # Send the test coordinates to the move function
+        self.moveMachine(moves)
+
+    def moveMachine(self,moves):
+        # Set velocity
+        self.machineNodes.setVelocityRequest(8)
+
+        # Launch coordinates
+        for coords in moves:
+            self.move(coords, 0)
+            status = self.machineNodes.spinStatusRequest()
+            while status[0]['stepsRemaining'] > 0:
+                  sleep(0.001)
+                  status = self.machineNodes.spinStatusRequest()
+
+        print
+        print "Nodes tested successfully."
 
 
 if __name__ == '__main__':
