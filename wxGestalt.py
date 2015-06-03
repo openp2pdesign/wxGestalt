@@ -35,7 +35,6 @@ from gestalt import utilities
 # The current machine edited in the app
 currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
 GUImachine = wxMachines.wxMachineGUI()
-terminal = sys.stdout
 path_file_opened = ""
 
 
@@ -292,6 +291,10 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         event.Skip()
 
     def On_NewMachine( self, event ):
+        # Reinitializes the wxMachine object
+        global currentMachine
+        currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
+        # Update the GUI
         event.Skip()
 
     def On_OpenMachine( self, event ):
@@ -332,6 +335,16 @@ class wxGestaltApp(wxMainApp.MyFrame1):
             return False
 
     def On_About( self, event ):
+        message = "A wxPython interface or IDE to the Gestalt system\n" + \
+        "\n" + \
+        "To be used with:\n" + \
+        "http://mtm.cba.mit.edu/machines/science/\n" + \
+        "https://github.com/imoyer/gestalt\n"+\
+        "\n" + \
+        "Source code on https://github.com/openp2pdesign/wxGestalt\n" + \
+        "\n" + \
+        "License: MIT"
+        self.On_Message("wxGestalt",message)
         event.Skip()
 
     def On_Message(self, title, content):
@@ -346,7 +359,6 @@ if __name__ == '__main__':
     ex1 = wxGestaltApp(None)
     ex1.Show()
     # Starting the log
-    # Redirect text here
     redir=RedirectText(ex1.tab_identify.wxLog)
     sys.stdout=redir
     ex.MainLoop()
