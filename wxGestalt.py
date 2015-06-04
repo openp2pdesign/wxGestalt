@@ -70,35 +70,22 @@ class wxTabSetup(wxTabSetup.MyPanel1):
 
         global GUImachine
         global currentMachine
-        global loadNodes
 
-        if loadNodes == False:
-            # Update nodes from GUI
-            # Add or remove nodes and therefore their GUI editing part
-            if self.m_spinCtrl1.GetValue() < GUImachine.nodesNumber:
-                self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
-                GUImachine.nodesNumber -=1
-            elif self.m_spinCtrl1.GetValue() > GUImachine.nodesNumber:
-                nodePage = wxNodeTabSetup(self.m_notebook_nodes)
-                self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
-                GUImachine.nodesNumber += 1
-            else:
-                pass
-
-            # Update the virtual class for the machine in the GUI
-            GUImachine.initNodesGUI(GUImachine.nodesNumber)
-            currentMachine.nodesNumber = GUImachine.nodesNumber
+        # Update nodes from GUI
+        # Add or remove nodes and therefore their GUI editing part
+        if self.m_spinCtrl1.GetValue() < GUImachine.nodesNumber:
+            #self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
+            GUImachine.nodesNumber -=1
+        elif self.m_spinCtrl1.GetValue() > GUImachine.nodesNumber:
+            #nodePage = wxNodeTabSetup(self.m_notebook_nodes)
+            #self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
+            GUImachine.nodesNumber += 1
         else:
-            # Load nodes from file
-            # Add or remove nodes and therefore their GUI editing part
-            for i in range(GUImachine.nodesNumber):
-                nodePage = wxNodeTabSetup(self.m_notebook_nodes)
-                self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(i+1))
-            loadNodes = False
+            pass
 
-
-            # Update the virtual class for the machine in the GUI
-            #GUImachine.initNodesGUI(GUImachine.nodesNumber)
+        # Update the virtual class for the machine in the GUI
+        GUImachine.initNodesGUI(GUImachine.nodesNumber)
+        currentMachine.nodesNumber = GUImachine.nodesNumber
 
         # Feedback on the status bar
         if GUImachine.nodesNumber == 1:
@@ -109,27 +96,27 @@ class wxTabSetup(wxTabSetup.MyPanel1):
 
 
 # The class for the Node tab
-class wxNodeTabSetup(wxNodeTab.MyPanel1):
-
-    def On_ChooseNodeType( self, event):
-        global GUImachine
-
-        currentNode = self.GetParent().GetSelection()
-        currentType = self.m_radioBox1.GetSelection()
-        if currentType == 0:
-            message = "Node #" + str(currentNode+1) + " is linear."
-            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-            GUImachine.nodesGUI[currentNode]["linear"] = True
-            GUImachine.nodesGUI[currentNode]["rotary"] = False
-            currentMachine.linear = True
-            currentMachine.rotary = False
-        else:
-            message = "Node #" + str(currentNode+1) + " is rotary."
-            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-            GUImachine.nodesGUI[currentNode]["linear"] = False
-            GUImachine.nodesGUI[currentNode]["rotary"] = True
-            currentMachine.linear = False
-            currentMachine.rotary = True
+# class wxNodeTabSetup(wxNodeTab.MyPanel1):
+#
+#     def On_ChooseNodeType( self, event):
+#         global GUImachine
+#
+#         currentNode = self.GetParent().GetSelection()
+#         currentType = self.m_radioBox1.GetSelection()
+#         if currentType == 0:
+#             message = "Node #" + str(currentNode+1) + " is linear."
+#             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+#             GUImachine.nodesGUI[currentNode]["linear"] = True
+#             GUImachine.nodesGUI[currentNode]["rotary"] = False
+#             currentMachine.linear = True
+#             currentMachine.rotary = False
+#         else:
+#             message = "Node #" + str(currentNode+1) + " is rotary."
+#             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+#             GUImachine.nodesGUI[currentNode]["linear"] = False
+#             GUImachine.nodesGUI[currentNode]["rotary"] = True
+#             currentMachine.linear = False
+#             currentMachine.rotary = True
 
 
 # The class for the Identify tab
@@ -261,6 +248,9 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_setup.m_listBox_interfaceType.Set(wxMachines.interfacesList)
         self.tab_setup.m_listBox_interfaceType.SetSelection(0)
         self.tab_setup.m_listBox_interfaceType.Bind( wx.EVT_LISTBOX, self.On_ChooseInterface )
+
+        # Disable node tabs
+        self.tab_setup.m_notebook_nodes.Hide()
 
         # Add tab
         self.m_notebook1.AddPage(self.tab_setup, "1. Machine Setup")
