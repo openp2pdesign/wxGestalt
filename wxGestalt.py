@@ -189,6 +189,17 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         self.editor.SetMarginWidth(1, 25)
         # Load basic template.py file at startup
         self.editor.SetText(open(os.getcwd() + "/CAM/template.py").read())
+        # Update the machine with the code
+        self.editor.Bind( wx.stc.EVT_STC_CHANGE, self.On_ModifyCode )
+
+    def On_ModifyCode( self, event):
+        global currentMachine
+        newcode = self.editor.GetValue()
+        currentMachine.CAMcode = newcode
+
+    def On_LoadDefaultFile( self ):
+        self.editor.SetText(open(os.getcwd() + "/CAM/template.py").read())
+        event.Skip()
 
     def On_LoadFile( self, event ):
         global path_file_opened
@@ -323,6 +334,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.On_InitGUI()
         # Update the GUI
         self.On_UpdateGUI()
+        self.tab_cam.On_LoadDefaultFile()
         event.Skip()
 
     def On_OpenMachine( self, event ):
@@ -391,15 +403,16 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Update all the values in GUI using data from the main wxMachine object
         global currentMachine
         global GUImachine
-        global loadNodes
         # Reset GUImachine
         GUImachine = wxMachines.wxMachineGUI()
         GUImachine.nodesNumber = currentMachine.nodesNumber
         # Update the Setup tab
-        loadNodes = True
         self.tab_setup.m_spinCtrl1.SetValue(currentMachine.nodesNumber)
+        self.tab_setup.m_listBox_serialPorts.SetStringSelection(currentMachine.portName)
+        self.tab_setup.m_listBox_baudrates.SetSelection(currentMachine.baudRate)
+        self.tab_setup.m_listBox_interfaceType.SetStringSelection(currentMachine.interfaceType)
         # Update the CAM tab
-        #self.tab_cam
+        self.tab_cam.editor.SetText(currentMachine.CAMcode)
 
 
 if __name__ == '__main__':

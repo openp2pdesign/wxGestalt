@@ -82,6 +82,7 @@ class wxMachine(machines.virtualMachine):
         self.machineAxesNodes = {}
         self.providedInterface = interface
         self.publishEnabled = True
+        self.CAMcode = ""
 
     def initMachine(self):
         # self.initInterfaces()
