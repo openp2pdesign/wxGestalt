@@ -212,12 +212,21 @@ class wxTabCAM(wxTabCAM.MyPanel1):
     def On_SaveCAM( self, event ):
         global path_file_opened
         file_to_save = self.editor.GetValue()
-        fo = open(path_file_opened, "w+")
-        fo.write(file_to_save.encode('utf8'));
-        fo.close()
-        message = "File saved"
-        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-        event.Skip()
+        dlg = wx.FileDialog(self, "Save as", path_file_opened, "", "*.py", wx.SAVE)
+        if dlg.ShowModal() == wx.ID_OK:
+            self.filename = dlg.GetFilename()
+            self.dirname = dlg.GetDirectory()
+            # Read data into the currentMachine object
+            file_to_save = os.path.join(self.dirname, self.filename)
+            fo = open(file_to_save, "w+")
+            newcode = self.editor.GetValue()
+            fo.write(newcode.encode('utf8'));
+            fo.close()
+            message = "File saved"
+            self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+            dlg.Destroy()
+            event.Skip()
+
 
     def On_LaunchCAM( self, event ):
         # Save a temporary file
