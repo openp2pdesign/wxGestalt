@@ -199,7 +199,6 @@ class wxTabCAM(wxTabCAM.MyPanel1):
 
     def On_LoadDefaultFile( self ):
         self.editor.SetText(open(os.getcwd() + "/CAM/template.py").read())
-        event.Skip()
 
     def On_LoadFile( self, event ):
         global path_file_opened
@@ -418,7 +417,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Update the Setup tab
         self.tab_setup.m_spinCtrl1.SetValue(currentMachine.nodesNumber)
         self.tab_setup.m_listBox_serialPorts.SetStringSelection(currentMachine.portName)
-        self.tab_setup.m_listBox_baudrates.SetSelection(currentMachine.baudRate)
+        self.tab_setup.m_listBox_baudrates.SetSelection(wxMachines.baudratesList.index(currentMachine.baudRate))
         self.tab_setup.m_listBox_interfaceType.SetStringSelection(currentMachine.interfaceType)
         # Update the CAM tab
         self.tab_cam.editor.SetText(currentMachine.CAMcode)
