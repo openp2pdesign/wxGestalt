@@ -34,8 +34,9 @@ from gestalt import utilities
 # Variables
 # The current machine edited in the app
 currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
-GUImachine = wxMachines.wxMachineGUI()
+GUImachine = wxMachines.wxMachineGUI(nodesNumber = 0)
 path_file_opened = ""
+loadNodes = False
 
 
 # Classes
@@ -65,18 +66,39 @@ class InitThread(wxSubThread.SimpleThread):
 # The class for the Setup tab
 class wxTabSetup(wxTabSetup.MyPanel1):
 
-    def On_OrganizeNodes( self, event ):
+    def On_OrganizeNodes( self, event):
 
         global GUImachine
+        global currentMachine
+        global loadNodes
 
-        # Add or remove nodes and therefore their GUI editing part
-        if self.m_spinCtrl1.GetValue() < GUImachine.nodesNumber:
-            self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
-            GUImachine.nodesNumber -=1
+        if loadNodes == False:
+            # Update nodes from GUI
+            # Add or remove nodes and therefore their GUI editing part
+            if self.m_spinCtrl1.GetValue() < GUImachine.nodesNumber:
+                self.m_notebook_nodes.DeletePage(self.m_spinCtrl1.GetValue())
+                GUImachine.nodesNumber -=1
+            elif self.m_spinCtrl1.GetValue() > GUImachine.nodesNumber:
+                nodePage = wxNodeTabSetup(self.m_notebook_nodes)
+                self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
+                GUImachine.nodesNumber += 1
+            else:
+                pass
+
+            # Update the virtual class for the machine in the GUI
+            GUImachine.initNodesGUI(GUImachine.nodesNumber)
+            currentMachine.nodesNumber = GUImachine.nodesNumber
         else:
-            nodePage = wxNodeTabSetup(self.m_notebook_nodes)
-            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
-            GUImachine.nodesNumber += 1
+            # Load nodes from file
+            # Add or remove nodes and therefore their GUI editing part
+            for i in range(GUImachine.nodesNumber):
+                nodePage = wxNodeTabSetup(self.m_notebook_nodes)
+                self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(i+1))
+            loadNodes = False
+
+
+            # Update the virtual class for the machine in the GUI
+            #GUImachine.initNodesGUI(GUImachine.nodesNumber)
 
         # Feedback on the status bar
         if GUImachine.nodesNumber == 1:
@@ -84,29 +106,6 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         else:
             message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt nodes."
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-
-        # Update the virtual class for the machine in the GUI
-        GUImachine.initNodesGUI(GUImachine.nodesNumber)
-        currentMachine.nodesNumber = GUImachine.nodesNumber
-
-    def On_LoadNodes(self):
-
-        global GUImachine
-
-        # Add or remove nodes and therefore their GUI editing part
-        for i in range(GUImachine.nodesNumber):
-            nodePage = wxNodeTabSetup(self.m_notebook_nodes)
-            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(i+1))
-
-        # Feedback on the status bar
-        if GUImachine.nodesNumber == 1:
-            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt node."
-        else:
-            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt nodes."
-        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-
-        # Update the virtual class for the machine in the GUI
-        GUImachine.initNodesGUI(GUImachine.nodesNumber)
 
 
 # The class for the Node tab
@@ -402,13 +401,13 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Update all the values in GUI using data from the main wxMachine object
         global currentMachine
         global GUImachine
+        global loadNodes
         # Reset GUImachine
         GUImachine = wxMachines.wxMachineGUI()
         GUImachine.nodesNumber = currentMachine.nodesNumber
         # Update the Setup tab
+        loadNodes = True
         self.tab_setup.m_spinCtrl1.SetValue(currentMachine.nodesNumber)
-        self.tab_setup.On_LoadNodes()
-        #self.tab_setup.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
         # Update the CAM tab
         #self.tab_cam
 
