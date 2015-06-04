@@ -89,6 +89,25 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         GUImachine.initNodesGUI(GUImachine.nodesNumber)
         currentMachine.nodesNumber = GUImachine.nodesNumber
 
+    def On_LoadNodes(self):
+
+        global GUImachine
+
+        # Add or remove nodes and therefore their GUI editing part
+        for i in range(GUImachine.nodesNumber):
+            nodePage = wxNodeTabSetup(self.m_notebook_nodes)
+            self.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(i+1))
+
+        # Feedback on the status bar
+        if GUImachine.nodesNumber == 1:
+            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt node."
+        else:
+            message = "The Machine now has " + str(GUImachine.nodesNumber) + " Gestalt nodes."
+        self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+
+        # Update the virtual class for the machine in the GUI
+        GUImachine.initNodesGUI(GUImachine.nodesNumber)
+
 
 # The class for the Node tab
 class wxNodeTabSetup(wxNodeTab.MyPanel1):
@@ -212,8 +231,8 @@ class wxTabCAM(wxTabCAM.MyPanel1):
         fo_temp.close()
         # Create the tab
         import temp_temp
-        self.GetParent().GetParent().tab_go = temp_temp.wxGestaltPanel(self.GetParent().GetParent().m_notebook1)
-        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_go, "4. Run the machine")
+        self.GetParent().GetParent().tab_launch = temp_temp.wxGestaltPanel(self.GetParent().GetParent().m_notebook1)
+        self.GetParent().GetParent().m_notebook1.AddPage(self.GetParent().GetParent().tab_launch, "4. Run the machine")
         message = "Launch tab created"
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
         event.Skip()
@@ -226,11 +245,9 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         super(wxGestaltApp, self).__init__(*args, **kw)
         global currentMachine
         self.myMachine = currentMachine
+        self.On_InitGUI()
 
-        self.InitUI()
-
-    def InitUI(self):
-
+    def On_InitGUI(self):
         # Add Setup Tab
         self.tab_setup = wxTabSetup(self.m_notebook1)
         # Serial port setup
@@ -253,6 +270,10 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_identify = wxTabIdentify(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_identify, "2. Identify the nodes")
 
+        # Starting the log
+        redir=RedirectText(self.tab_identify.wxLog)
+        sys.stdout=redir
+
         # Add Test Tab
         #self.tab_test = wxTabTest(self.m_notebook1)
         #self.m_notebook1.AddPage(self.tab_test, "3. Test the Machine")
@@ -261,6 +282,19 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         self.tab_cam = wxTabCAM(self.m_notebook1)
         self.m_notebook1.AddPage(self.tab_cam, "3. CAM")
 
+    def On_DeleteGUI(self):
+        # Delete all elements in GUI: the main tabs
+        for i in range(self.m_notebook1.GetPageCount()):
+            self.m_notebook1.DeletePage(0)
+        del self.tab_setup
+        del self.tab_identify
+        #del self.tab_test # Uncomment it when the tab_test will be finalized
+        del self.tab_cam
+        try:
+            del self.tab_launch
+        except:
+            # There is no Launch tab, just pass
+            pass
 
     def On_Quit( self, event ):
         self.Close(True)
@@ -294,7 +328,12 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         # Reinitializes the wxMachine object
         global currentMachine
         currentMachine = wxMachines.wxMachine(persistenceFile="debug.vmp")
+        # Delete old GUI
+        self.On_DeleteGUI()
+        # Create a new GUI
+        self.On_InitGUI()
         # Update the GUI
+        self.On_UpdateGUI()
         event.Skip()
 
     def On_OpenMachine( self, event ):
@@ -310,9 +349,15 @@ class wxGestaltApp(wxMainApp.MyFrame1):
             # Read data into the currentMachine object
             file_to_open = open(os.path.join(self.dirname, self.filename))
             json_str = file_to_open.read()
-            currentMachine = jsonpickle.decode(json_str)
+            loadedMachine = json.loads(json_str)
+            currentMachine = jsonpickle.decode(loadedMachine)
             dlg.Destroy()
+            # Delete old GUI
+            self.On_DeleteGUI()
+            # Create a new GUI
+            self.On_InitGUI()
             # Update the GUI
+            self.On_UpdateGUI()
 
     def On_SaveMachine( self, event ):
         # Get the current machine as a JSON text
@@ -353,12 +398,23 @@ class wxGestaltApp(wxMainApp.MyFrame1):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def On_UpdateGUI(self):
+        # Update all the values in GUI using data from the main wxMachine object
+        global currentMachine
+        global GUImachine
+        # Reset GUImachine
+        GUImachine = wxMachines.wxMachineGUI()
+        GUImachine.nodesNumber = currentMachine.nodesNumber
+        # Update the Setup tab
+        self.tab_setup.m_spinCtrl1.SetValue(currentMachine.nodesNumber)
+        self.tab_setup.On_LoadNodes()
+        #self.tab_setup.m_notebook_nodes.AddPage(nodePage,u"Node #"+str(GUImachine.nodesNumber+1))
+        # Update the CAM tab
+        #self.tab_cam
+
 
 if __name__ == '__main__':
     ex = wx.App()
     ex1 = wxGestaltApp(None)
     ex1.Show()
-    # Starting the log
-    redir=RedirectText(ex1.tab_identify.wxLog)
-    sys.stdout=redir
     ex.MainLoop()
