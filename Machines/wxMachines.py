@@ -85,12 +85,6 @@ class wxMachine(machines.virtualMachine):
         self.CAMcode = ""
 
     def initMachine(self):
-        # self.initInterfaces()
-        # self.initControllers()
-        # self.initCoordinates()
-        # self.initKinematics()
-        # self.initFunctions()
-
         self.initInterfaces()
         self.initControllers()
         self.initCoordinates()
@@ -176,9 +170,6 @@ class wxMachine(machines.virtualMachine):
             while status[0]['stepsRemaining'] > 0:
                   sleep(0.001)
                   status = self.machineNodes.spinStatusRequest()
-
-        print
-        print "Nodes tested successfully."
 
 
 if __name__ == '__main__':

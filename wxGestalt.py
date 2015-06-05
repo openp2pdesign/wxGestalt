@@ -61,6 +61,8 @@ class InitThread(wxSubThread.SimpleThread):
         currentMachine.initMachine()
         # Test the machine
         currentMachine.testMachine()
+        print
+        print "Nodes tested successfully."
 
 
 # The class for the Setup tab
@@ -95,28 +97,28 @@ class wxTabSetup(wxTabSetup.MyPanel1):
         self.GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
 
 
-# The class for the Node tab
-# class wxNodeTabSetup(wxNodeTab.MyPanel1):
-#
-#     def On_ChooseNodeType( self, event):
-#         global GUImachine
-#
-#         currentNode = self.GetParent().GetSelection()
-#         currentType = self.m_radioBox1.GetSelection()
-#         if currentType == 0:
-#             message = "Node #" + str(currentNode+1) + " is linear."
-#             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-#             GUImachine.nodesGUI[currentNode]["linear"] = True
-#             GUImachine.nodesGUI[currentNode]["rotary"] = False
-#             currentMachine.linear = True
-#             currentMachine.rotary = False
-#         else:
-#             message = "Node #" + str(currentNode+1) + " is rotary."
-#             self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
-#             GUImachine.nodesGUI[currentNode]["linear"] = False
-#             GUImachine.nodesGUI[currentNode]["rotary"] = True
-#             currentMachine.linear = False
-#             currentMachine.rotary = True
+#The class for the Node tab. Disabled at the moment
+class wxNodeTabSetup(wxNodeTab.MyPanel1):
+
+    def On_ChooseNodeType( self, event):
+        global GUImachine
+
+        currentNode = self.GetParent().GetSelection()
+        currentType = self.m_radioBox1.GetSelection()
+        if currentType == 0:
+            message = "Node #" + str(currentNode+1) + " is linear."
+            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+            GUImachine.nodesGUI[currentNode]["linear"] = True
+            GUImachine.nodesGUI[currentNode]["rotary"] = False
+            currentMachine.linear = True
+            currentMachine.rotary = False
+        else:
+            message = "Node #" + str(currentNode+1) + " is rotary."
+            self.GetParent().GetParent().GetParent().GetParent().m_statusBar1.SetStatusText(message, 0)
+            GUImachine.nodesGUI[currentNode]["linear"] = False
+            GUImachine.nodesGUI[currentNode]["rotary"] = True
+            currentMachine.linear = False
+            currentMachine.rotary = True
 
 
 # The class for the Identify tab
@@ -228,12 +230,15 @@ class wxTabCAM(wxTabCAM.MyPanel1):
 
 
     def On_LaunchCAM( self, event ):
+        global currentMachine
         # Save a temporary file
         file_to_save = self.editor.GetValue()
         temp_path = os.getcwd() + "/temp_temp.py"
         fo_temp = codecs.open(temp_path, "w+",'utf-8')
         fo_temp.write(unidecode(file_to_save));
         fo_temp.close()
+        # Pass current machine to the Launch tab
+        self.GetParent().myMachine = currentMachine
         # Create the tab
         import temp_temp
         self.GetParent().GetParent().tab_launch = temp_temp.wxGestaltPanel(self.GetParent().GetParent().m_notebook1)
