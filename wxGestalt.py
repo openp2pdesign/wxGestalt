@@ -293,7 +293,7 @@ class wxGestaltApp(wxMainApp.MyFrame1):
 
         # Add CAM Tab
         self.tab_cam = wxTabCAM(self.m_notebook1)
-        self.m_notebook1.AddPage(self.tab_cam, "3. CAM")
+        self.m_notebook1.AddPage(self.tab_cam, "3. IDE")
 
     def On_DeleteGUI(self):
         # Delete all elements in GUI: the main tabs
